@@ -1,8 +1,6 @@
 module.exports = function (mongoose, materializedPlugin) {
   var commentSchema = mongoose.Schema({
     _author   : { type: mongoose.Schema.Types.ObjectId, ref: 'User', required : true },
-    _parent   : { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' },
-    hasParent : { type: Boolean, required: true },
     content   : { type: String,  required: true },
     created   : Number,
     points    : { type: Number,  default : 0 },
