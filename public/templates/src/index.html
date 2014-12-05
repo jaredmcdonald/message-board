@@ -1,3 +1,5 @@
-{{#items}}
-  <div class="item" data-id="{{_id}}">{{content}} - {{points}} points</div>
-{{/items}}
+<ol>
+  {{#items}}
+    <li class="item"><a class="item-link" href="#" data-id="{{_id}}">{{content}}</a> | <span class="points">{{points}} points</span> <span class="author">by {{_author.username}}</span></li>
+  {{/items}}
+</ol>

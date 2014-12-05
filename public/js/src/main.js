@@ -21,7 +21,7 @@ function renderIndex (data) {
 
 // Add delegated event listeners here.
 function clickStoryListener (event) {
-  if (/item/.test(event.target.className)) {
+  if (/item-link/.test(event.target.className)) {
     getThread(event.target.dataset.id)
   }
 }
@@ -40,11 +40,11 @@ function renderThread (thread) {
 // Recursively build up nested HTML structure.
 function generateThreadHtml (item) {
   if (!item.children) {
-    return templates.thread.render({ content : item.content });
+    return templates.thread.render({ item });
   }
 
   return templates.thread.render({
-    content : item.content,
+    item,
     nested : item.children.reduce((str, current) => str + generateThreadHtml(current), '')
   });
 }
