@@ -34,7 +34,6 @@ function getThread (id) {
 }
 
 function renderThread (thread) {
-  let $content = document.querySelector('.content');
   document.querySelector('.content').innerHTML = generateThreadHtml(thread);
 }
 
