@@ -7,7 +7,8 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var materializedPlugin = require('mongoose-materialized');
 var models = require('./models')(mongoose, materializedPlugin);
-var routes = require('./routes')(models);
+var apiRoutes = require('./routes/api')(models);
+var htmlRoutes = require('./routes/html')
 
 var app = express();
 
@@ -23,9 +24,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// HTML
+app.use('/', htmlRoutes);
+
+// API
 var baseApiPath = '/api/v1';
-app.use(baseApiPath + '/comment', routes.comment);
-app.use(baseApiPath + '/user', routes.user);
+app.use(baseApiPath + '/comment', apiRoutes.comment);
+app.use(baseApiPath + '/user'   , apiRoutes.user);
 
 // DB
 mongoose.connect(process.env.MONGODB_HOST || 'localhost/messageboard');
