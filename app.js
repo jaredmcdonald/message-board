@@ -5,7 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var models = require('./models')(mongoose);
+var materializedPlugin = require('mongoose-materialized');
+var models = require('./models')(mongoose, materializedPlugin);
 var routes = require('./routes/index')(models);
 var users = require('./routes/users')(models);
 

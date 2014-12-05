@@ -12,7 +12,7 @@ module.exports = function (models) {
   // GET a specific thread.
   // not working yet
   router.get('/comment/:id/thread', function (req, res) {
-    getCommentThread(req.params.id, models.comment, sendCommentData.bind(null, res))
+    getCommentThread(req.params.id, models.comment, sendThreadData.bind(null, res))
   })
 
   // GET all comments.
@@ -29,10 +29,21 @@ module.exports = function (models) {
   router.get('/comment/:id', function (req, res) {
     models.comment.findById(req.params.id).exec(function (err, comment) {
       if (err) return res.status(500).send({ status: 'error', error : err });
+      if (!comment) return res.status(404).send({ status : 'error', error : 'not found' });
 
       res.status(200).send(comment);
     });
   });
+
+  // DELETE a specific comment.
+  router.delete('/comment/:id', function (req, res) {
+    models.comment.findByIdAndUpdate(req.params.id, { deleted : true }).exec(function (err, comment) {
+      if (err) return res.status(500).send({ status : 'error', error : err });
+      if (!comment) return res.status(404).send({ status : 'error', error : 'not found' });
+
+      res.status(204).send();
+    })
+  })
 
   // POST a new comment.
   router.post('/comment', function (req, res) {
@@ -52,11 +63,12 @@ function sendTopLevelThreads (res, err, comments) {
   res.status(200).send(comments);
 }
 
-function sendCommentData (res, err, comment) {
+function sendThreadData (res, err, thread) {
   if (err) return res.status(500).send({ status : 'error', error : err });
-  if (!comment) return res.status(404).send({ status : 'error', error : 'not found' });
+  if (!thread) return res.status(404).send({ status : 'error', error : 'not found' });
 
-  res.status(200).send(comment);
+  res.status(200).send(thread[0]); // index 0 because we don't need the
+                                   // array wrapper with just one element
 }
 
 // DB query for index page
@@ -70,18 +82,7 @@ function getIndexData (CommentModel, callback) {
 
 // DB query for comment thread
 function getCommentThread (id, CommentModel, callback) {
-  CommentModel.findById(id)
-              .exec(function (err, comment) {
-                populateChildren(CommentModel, comment).then(callback.bind(null, err));
-              });
-}
-
-// Recursively populate children
-// todo: fix
-function populateChildren(CommentModel, comment) {
-  return CommentModel.populate(comment, { path: '_children' }).then(function(subcomment) {
-    return subcomment.children.length ? populateChildren(CommentModel, subcomment.children) : Promise.fulfill(subcomment);
-  });
+  CommentModel.GetArrayTree({ _id : id }, callback)
 }
 
 function postNewComment(models, comment, callback) {
@@ -95,12 +96,10 @@ function postNewComment(models, comment, callback) {
 
     // Associate newly saved comment with its parent, if it has one
     if (newComment.hasParent) {
-      models.comment.findByIdAndUpdate(newComment._parent, {
-        $push : {
-          _children : newComment._id
-        }
-      }).exec(function (err, parent) {
-        console.log(err || 'successful association of comment ' + newComment._id + ' with parent ' + parent._id);
+      models.comment.findOne({ _id : newComment._parent }, function (err, parent) {
+        parent.appendChild(newComment, function (err, data) {
+          console.log(err || 'successful association of comment ' + newComment._id + ' with parent ' + parent._id);
+        });
       });
     }
 
