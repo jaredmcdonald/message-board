@@ -1,11 +1,11 @@
 module.exports = function (mongoose) {
   var userSchema = mongoose.Schema({
     _comments : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-    username : String,
-    pwHash   : String, // MD5 hash of password
+    username : { type: String, required: true },
+    pwHash   : { type: String, required: true }, // MD5 hash of password
     bio      : String,
     created  : Number,
-    admin    : Boolean
+    admin    : { type: Boolean, default: false }
   });
 
   userSchema.pre('save', function (next) {

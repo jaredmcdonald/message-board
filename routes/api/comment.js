@@ -30,7 +30,7 @@ module.exports = function (models) {
 
   // GET a specific thread.
   router.get('/:id/thread', function (req, res) {
-    getCommentThread(req.params.id, models.comment, sendThreadData.bind(null, res))
+    getCommentThread(req.params.id, models, sendThreadData.bind(null, res))
   })
 
   // DELETE a specific comment.
@@ -65,8 +65,7 @@ function sendThreadData (res, err, thread) {
   if (err) return res.status(500).send({ status : 'error', error : err });
   if (!thread) return res.status(404).send({ status : 'error', error : 'not found' });
 
-  res.status(200).send(thread[0]); // index 0 because we don't need the
-                                   // array wrapper with just one element
+  res.status(200).send(thread);
 }
 
 // DB query for root-level threads
@@ -79,8 +78,65 @@ function getIndexData (CommentModel, callback) {
 }
 
 // DB query for comment thread
-function getCommentThread (id, CommentModel, callback) {
-  CommentModel.GetArrayTree({ _id : id }, callback)
+function getCommentThread (id, models, callback) {
+  models.comment.GetArrayTree({ _id : id }, function (err, thread) {
+    if (err) return callback (err, null);
+
+    populateAuthors(thread[0], models, callback); // index 0 because we don't need the
+                                                  // array wrapper with just one element
+  });
+}
+
+function populateAuthors (thread, models, callback) {
+  var authors = getAuthors(thread);
+
+  models.user.find({
+    _id : {
+      $in : authors
+    }
+  }).exec(function (err, authors) {
+    if (err) return callback(err, null);
+
+    callback(null, matchAuthor(thread, arrayToMap(authors)));
+  })
+}
+
+function arrayToMap (arr) {
+  var map = {};
+  arr.forEach(function (item) {
+    map[item._id] = item;
+  });
+  return map;
+}
+
+function matchAuthor (thread, map) {
+  thread._author = map[thread._author];
+
+  if (thread.children) {
+    thread.children.forEach(function (child) {
+      matchAuthor(child, map);
+    });
+  }
+
+  return thread;
+}
+
+// Given an ArrayTree, return an array of
+// `_author`s contained within it
+function getAuthors (item, arr) {
+  arr = arr || [];
+
+  if (arr.indexOf(item._author) === -1) {
+    arr.push(item._author)
+  }
+
+  if (item.children) {
+    item.children.forEach(function (item) {
+      getAuthors(item, arr);
+    });
+  }
+
+  return arr;
 }
 
 function postNewComment(models, comment, callback) {
