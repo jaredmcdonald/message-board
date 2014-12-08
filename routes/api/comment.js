@@ -94,7 +94,7 @@ function populateAuthors (thread, models, callback) {
     _id : {
       $in : authors
     }
-  }).exec(function (err, authors) {
+  }, 'username _id').exec(function (err, authors) {
     if (err) return callback(err, null);
 
     callback(null, matchAuthor(thread, arrayToMap(authors)));
