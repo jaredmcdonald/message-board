@@ -9,7 +9,20 @@ function initialize (event) {
     .success(renderIndex)
     .send();
 
-  watchUserDetailsEvents();
+  new Request('/api/v1/user/login')
+    .error(console.error.bind(console))
+    .success(initUserDetails)
+    .send();
+}
+
+function initUserDetails (response) {
+  let $details = document.querySelector('.user-details');
+  watchUserDetailsEvents($details);
+  renderUserDetails(response);
+}
+
+function renderUserDetails (response) {
+  document.querySelector('.user-details').innerHTML = templates.login.render(response.data);
 }
 
 function renderIndex (response) {
@@ -22,47 +35,47 @@ function renderIndex (response) {
   $content.addEventListener('click', clickStoryListener);
 }
 
-function watchUserDetailsEvents () {
-  document.getElementById('userDetails').addEventListener('click', function (event) {
+function watchUserDetailsEvents ($details) {
+  $details.addEventListener('click', function (event) {
 
-    if (/login/.test(event.target.className)) {
-      event.preventDefault();
-      renderLoginForm();
-
-    } else if (/logout/.test(event.target.className)) {
+    if (/logout/.test(event.target.className)) {
       event.preventDefault();
       logout();
     }
 
   });
-}
 
-function renderLoginForm () {
-  document.querySelector('.content').innerHTML = templates.login.render();
-
-  var $form = document.getElementById('loginForm');
-  document.getElementById('loginForm').addEventListener('submit', function (event) {
+  $details.addEventListener('submit', function (event) {
     event.preventDefault();
 
     login({
       username : event.target[0].value,
       password : event.target[1].value
-    })
-
+    });
   })
 }
 
 function login (data) {
   new Request('/api/v1/user/login', 'POST')
     .error(console.error.bind(console))
-    .success(function () { console.log('login success')})
+    .success(loginHandler)
     .send(data);
+}
+
+function loginHandler (response) {
+  if (response.statusCode === 401) {
+    response.data = {
+      authFailed: true,
+      loggedIn: false
+    }
+  }
+  renderUserDetails(response);
 }
 
 function logout () {
   new Request('/api/v1/user/logout', 'POST')
     .error(console.error.bind(console))
-    .success(function () { console.log('login success')})
+    .success(loginHandler.bind(undefined, { data : { authFailed: false, loggedIn: false }}))
     .send({});
 }
 
@@ -72,8 +85,15 @@ function clickStoryListener (event) {
   if (/item-link/.test(event.target.className)) {
     event.preventDefault();
     getThread(event.target.dataset.id);
+  } else if (/reply-link/.test(event.target.className)) {
+    event.preventDefault();
+    createReplyForm(event.target);
   }
 
+}
+
+function createReplyForm (element) {
+  element.parentElement.innerHTML += templates.submit.render({});
 }
 
 function getThread (id) {

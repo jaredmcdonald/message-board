@@ -17,8 +17,11 @@ module.exports = function (models) {
       if (err) return utils.internalServerError(res);
       if (!user) return utils.notAuthorized(res, 'auth failed');
 
-      session.login(req, user.username);
-      utils.noContent(res);
+      session.login(req, user.username, user._id);
+      utils.ok(res, {
+        loggedIn: session.isLoggedIn(req),
+        username: session.getUsername(req)
+      });
     });
   });
 
@@ -29,6 +32,14 @@ module.exports = function (models) {
 
     session.logout(req);
     utils.noContent(res);
+  });
+
+  // Return user details if user is logged in
+  router.get('/login', function (req, res) {
+    utils.ok(res, {
+      loggedIn: session.isLoggedIn(req),
+      username: session.getUsername(req)
+    });
   });
 
   router.get('/', function (req, res) {

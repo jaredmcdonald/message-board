@@ -10,3 +10,12 @@ a {
 .children {
   margin-left: 20px;
 }
+
+p {
+  &.inline {
+    display: inline;
+  }
+  &.error {
+    color: red;
+  }
+}

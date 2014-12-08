@@ -1,5 +1,14 @@
-<form name="login" id="loginForm" method="POST" action="/api/v1/user/login">
-  <input type="text" name="username" placeholder="username"></input>
-  <input type="password" name="password" placeholder="password"></input>
-  <input type="submit" value="submit"></input>
-</form>
+{{#loggedIn}}
+  <p>Hi, {{username}}. <a href="#" class="logout">Log out</a></p>
+{{/loggedIn}}
+{{^loggedIn}}
+  <form name="login" id="loginForm" method="POST" action="/api/v1/user/login">
+    <p class="inline">Log in:</p>
+    <input type="text" name="username" placeholder="username"></input>
+    <input type="password" name="password" placeholder="password"></input>
+    <input type="submit" value="submit"></input>
+  </form>
+{{/loggedIn}}
+{{#authFailed}}
+  <p class="error">Authentication failed.</p>
+{{/authFailed}}

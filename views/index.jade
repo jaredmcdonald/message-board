@@ -1,11 +1,7 @@
 extends layout
 
 block header
-  header(id="userDetails")
-    if loggedIn
-      p Hi, #{username}. #[a(href="#", class="logout") Log out]
-    else
-      p #[a(href="#", class="login") Log in]
+  header(class="user-details")
 
 block content
   article(class="content")

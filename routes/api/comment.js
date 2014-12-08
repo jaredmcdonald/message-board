@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var utils = require('../../modules/http-utils')
+var utils = require('../../modules/http-utils');
+var session = require('../../modules/session');
 
 module.exports = function (models) {
 
@@ -46,7 +47,12 @@ module.exports = function (models) {
 
   // POST a new comment.
   router.post('/', function (req, res) {
-    postNewComment(models, req.body, function (err, id) {
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+
+    var comment = req.body;
+    comment._author = session.getUserId(req);
+
+    postNewComment(models, comment, function (err, id) {
       if (err) return utils.internalServerError(res);
 
       utils.created(res, { status : 'created', id : id });
