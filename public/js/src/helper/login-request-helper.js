@@ -1,21 +1,23 @@
 module.exports = function (Request) {
 
+  let basePath = '/api/v1/user';
+
   function checkLogin (callback) {
-    new Request('/api/v1/user/login')
+    new Request(`${basePath}/login`)
       .error(console.error.bind(console))
       .handler(callback)
       .send();
   }
 
   function login (data, callback) {
-    new Request('/api/v1/user/login', 'POST')
+    new Request(`${basePath}/login`, 'POST')
       .error(console.error.bind(console))
       .handler(callback)
       .send(data);
   }
 
   function logout (callback) {
-    new Request('/api/v1/user/logout', 'POST')
+    new Request(`${basePath}/logout`, 'POST')
       .error(console.error.bind(console))
       .handler(callback)
       .send({});
