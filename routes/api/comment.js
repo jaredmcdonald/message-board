@@ -1,15 +1,16 @@
 var express = require('express');
 var router = express.Router();
+var utils = require('../../modules/http-utils')
 
 module.exports = function (models) {
 
   // GET all comments.
   // todo: add filter and pagination query params
   router.get('/', function (req, res) {
-    models.comment.find().exec(function (err, comments) {
-      if (err) return res.status(500).send({ status: 'error', error : err });
+    models.comment.find({}, '-__v -_w').exec(function (err, comments) {
+      if (err) return utils.internalServerError(res);
 
-      res.status(200).send(comments);
+      utils.ok(res, comments);
     });
   });
 
@@ -20,11 +21,11 @@ module.exports = function (models) {
 
   // GET a specific comment.
   router.get('/:id', function (req, res) {
-    models.comment.findById(req.params.id).exec(function (err, comment) {
-      if (err) return res.status(500).send({ status: 'error', error : err });
-      if (!comment) return res.status(404).send({ status : 'error', error : 'not found' });
+    models.comment.findById(req.params.id, '-__v -_w').exec(function (err, comment) {
+      if (err) return utils.internalServerError(res);
+      if (!comment) return utils.notFound(res);
 
-      res.status(200).send(comment);
+      utils.ok(res, comment);
     });
   });
 
@@ -36,19 +37,19 @@ module.exports = function (models) {
   // DELETE a specific comment.
   router.delete('/:id', function (req, res) {
     models.comment.findByIdAndUpdate(req.params.id, { deleted : true }).exec(function (err, comment) {
-      if (err) return res.status(500).send({ status : 'error', error : err });
-      if (!comment) return res.status(404).send({ status : 'error', error : 'not found' });
+      if (err) return utils.internalServerError(res);
+      if (!comment) return utils.notFound(res);
 
-      res.status(204).send();
+      utils.noContent(res);
     })
   })
 
   // POST a new comment.
   router.post('/', function (req, res) {
     postNewComment(models, req.body, function (err, id) {
-      if (err) return res.status(500).send({ status: 'error', error : err });
+      if (err) return utils.internalServerError(res);
 
-      res.status(201).send({ status : 'created', id : id });
+      utils.created(res, { status : 'created', id : id });
     });
   })
 
@@ -56,21 +57,21 @@ module.exports = function (models) {
 }
 
 function sendTopLevelThreads (res, err, comments) {
-  if (err) return res.status(500).send({ status : 'error', error : err });
+  if (err) return utils.internalServerError(res);
 
-  res.status(200).send(comments);
+  utils.ok(res, comments);
 }
 
 function sendThreadData (res, err, thread) {
-  if (err) return res.status(500).send({ status : 'error', error : err });
-  if (!thread) return res.status(404).send({ status : 'error', error : 'not found' });
+  if (err) return utils.internalServerError(res);
+  if (!thread) return utils.notFound(res);
 
-  res.status(200).send(thread);
+  utils.ok(res, thread);
 }
 
 // DB query for root-level threads
 function getIndexData (CommentModel, callback) {
-  CommentModel.find({ parentId : null })
+  CommentModel.find({ parentId : null }, '-__v -_w')
               .sort('-points')
               .limit(20)
               .populate('_author')
@@ -79,6 +80,7 @@ function getIndexData (CommentModel, callback) {
 
 // DB query for comment thread
 function getCommentThread (id, models, callback) {
+  // TODO remove '__v' and '_w'
   models.comment.GetArrayTree({ _id : id }, function (err, thread) {
     if (err) return callback (err, null);
 

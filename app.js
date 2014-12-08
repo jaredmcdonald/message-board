@@ -3,12 +3,13 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var materializedPlugin = require('mongoose-materialized');
 var models = require('./models')(mongoose, materializedPlugin);
 var apiRoutes = require('./routes/api')(models);
-var htmlRoutes = require('./routes/html')
+var htmlRoutes = require('./routes/html');
 
 var app = express();
 
@@ -22,6 +23,11 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({
+  resave : false,
+  saveUninitialized: false,
+  secret : process.env.SECRET || 'some_placeholder_secret_for_development_only'
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // HTML

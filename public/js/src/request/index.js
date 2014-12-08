@@ -3,11 +3,18 @@ module.exports = class Request {
   constructor (url, method = 'GET') {
     this.xhr = new XMLHttpRequest();
     this.xhr.open(method.toUpperCase(), url);
+    this.xhr.setRequestHeader('Content-Type', 'application/json');
   }
   success (callback) {
     var self = this;
     this.xhr.onload = function (event) {
-      callback (JSON.parse(self.xhr.response));
+      if (self.xhr.response) {
+        callback(JSON.parse(self.xhr.response));
+      } else {
+        // contentless responses
+        callback();
+      }
+
     };
     return this;
   }
@@ -15,8 +22,8 @@ module.exports = class Request {
     this.xhr.onerror = callback;
     return this;
   }
-  send () {
-    this.xhr.send();
+  send (data) {
+    this.xhr.send(JSON.stringify(data));
     return this;
   }
 }

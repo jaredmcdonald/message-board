@@ -3,7 +3,7 @@ module.exports = function (mongoose) {
     _comments : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     username : { type: String, required: true },
     pwHash   : { type: String, required: true }, // MD5 hash of password
-    bio      : String,
+    bio      : { type: String, default: '' },
     created  : Number,
     admin    : { type: Boolean, default: false }
   });
