@@ -3,11 +3,12 @@ let UserDetailsModel = require('../model/user-details-model'),
 
 module.exports = class UserDetailsView {
 
-  constructor (templates, Request, registry) {
-    this.model = new UserDetailsModel();
+  constructor (template, Request, appRegistry, appEvents) {
+    this.model = new UserDetailsModel(appRegistry, appEvents);
     this.requests = loginRequestHelper(Request);
-    this.templates = templates;
-    this.registry = registry;
+    this.template = template;
+    this.appEvents = appEvents;
+    this.appRegistry = appRegistry;
     this.initialize();
   }
 
@@ -15,14 +16,6 @@ module.exports = class UserDetailsView {
     this.el = document.querySelector('.user-details');
     this.requests.checkLogin(this.handleResponse.bind(this));
     this.setEvents();
-
-    let self = this;
-
-    this.registry.register('isLoggedIn', function () {
-      return self.model.loggedIn;
-    })
-
-    return this;
   }
 
   handleResponse (data) {
@@ -66,7 +59,7 @@ module.exports = class UserDetailsView {
   }
 
   render () {
-    this.el.innerHTML = this.templates.login.render(this.model.getData());
+    this.el.innerHTML = this.template.render(this.model.getData());
   }
 
 }

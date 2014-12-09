@@ -1,30 +1,21 @@
-let UserDetailsView = require('./user-details-view');
+let UserDetailsView = require('./user-details-view'),
+    ContentView = require('./content-view'),
+    Request = require('../request'),
+    EventRegistry = require('../helper/events.js'),
+    StaticRegistry = require('../helper/registry.js'),
+    templates = require('../../../templates/dist/templates');
 
 module.exports = class AppView {
 
-  constructor (Request, templates) {
-    this.Request = Request;
-    this.templates = templates;
-    this.registry = {
-      register : this.register.bind(this),
-      call : this.callRegistered.bind(this)
-    };
-    this.registered = {};
+  constructor () {
+    this.events = new EventRegistry();
+    this.registry = new StaticRegistry();
   }
 
   initialize () {
-    this.userDetailsView = new UserDetailsView(this.templates, this.Request, this.registry);
+    this.userDetailsView = new UserDetailsView(templates.login, Request, this.registry, this.events);
+    this.contentView = new ContentView(templates, Request, this.registry, this.events);
+
     return this;
   }
-
-  // Register a shared function as `name`
-  register (name, fn) {
-    this.registered[name] = fn;
-  }
-
-  // Call the shared function at `name`
-  callRegistered (name) {
-    return this.registered[name]();
-  }
-
 }

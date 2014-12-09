@@ -2,7 +2,7 @@ module.exports = function (Request) {
 
   let basePath = '/api/v1/comment';
 
-  function roots (callback) {
+  function index (callback) {
     new Request(`${basePath}/root`)
       .error(console.error.bind(console))
       .handler(callback)
@@ -24,7 +24,7 @@ module.exports = function (Request) {
   }
 
   return {
-    roots,
+    index,
     thread,
     create
   };

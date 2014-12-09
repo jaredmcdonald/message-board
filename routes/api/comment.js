@@ -52,10 +52,10 @@ module.exports = function (models) {
     var comment = req.body;
     comment._author = session.getUserId(req);
 
-    postNewComment(models, comment, function (err, id) {
+    postNewComment(models, comment, function (err, newComment) {
       if (err) return utils.internalServerError(res);
 
-      utils.created(res, { status : 'created', id : id });
+      utils.created(res, newComment);
     });
   })
 
@@ -154,7 +154,7 @@ function postNewComment(models, comment, callback) {
 
     // Send HTTP response without waiting for association
     // with user; do that work in the background (below)
-    callback(err, newComment._id)
+    callback(err, newComment)
 
     // Associate newly saved comment with its author
     models.user.findByIdAndUpdate(newComment._author, {
