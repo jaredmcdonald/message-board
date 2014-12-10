@@ -1,3 +1,4 @@
+const namespace = 'ThreadView';
 let ThreadModel = require('../model/thread-model');
 
 module.exports = class ThreadView {
@@ -16,8 +17,6 @@ module.exports = class ThreadView {
     this.createBoundHandlers();
     this.bindEvents();
     this.requests.thread(this.id, this.handleResponse.bind(this));
-
-    this.appEvents.listen('login', this.loginHandler.bind(this));
   }
 
   loginHandler (data) {
@@ -39,11 +38,13 @@ module.exports = class ThreadView {
   bindEvents () {
     this.el.addEventListener('click', this.bound.click);
     this.el.addEventListener('submit', this.bound.submit);
+    this.appEvents.listen('login', namespace, this.loginHandler.bind(this));
   }
 
   unbind () {
     this.el.removeEventListener('click', this.bound.click);
     this.el.addEventListener('submit', this.bound.submit);
+    this.appEvents.remove('login', namespace);
   }
 
   clickListener (event) {

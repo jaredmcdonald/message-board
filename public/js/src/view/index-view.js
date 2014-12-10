@@ -1,3 +1,4 @@
+const namespace = 'IndexView';
 let IndexModel = require('../model/index-model');
 
 module.exports = class IndexView {
@@ -14,10 +15,9 @@ module.exports = class IndexView {
 
   initialize () {
     this.createBoundHandlers();
-    this.bindEvents();
     this.request(this.handleResponse.bind(this));
 
-    this.appEvents.listen('login', this.loginHandler.bind(this));
+    this.bindEvents();
   }
 
   loginHandler (data) {
@@ -55,9 +55,11 @@ module.exports = class IndexView {
 
   bindEvents () {
     this.el.addEventListener('click', this.bound.click);
+    this.appEvents.listen('login', namespace, this.loginHandler.bind(this));
   }
 
   unbind () {
     this.el.removeEventListener('click', this.bound.click);
+    this.appEvents.remove('login', namespace);
   }
 }

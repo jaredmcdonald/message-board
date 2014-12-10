@@ -1,3 +1,5 @@
+const namespace = 'SubmitView';
+
 module.exports = class SubmitView {
   constructor (parentView) {
     this.parentView = parentView;
@@ -14,9 +16,6 @@ module.exports = class SubmitView {
     this.createBoundHandlers();
     this.bindEvents();
     this.render();
-
-    // listen for logout (a login event with loggedIn: false)
-    this.appEvents.listen('login', this.logoutHandler.bind(this));
   }
 
   logoutHandler (data) {
@@ -44,10 +43,14 @@ module.exports = class SubmitView {
 
   bindEvents () {
     this.el.addEventListener('submit', this.bound.submit);
+    
+    // listen for logout (a login event with loggedIn: false)
+    this.appEvents.listen('login', namespace, this.logoutHandler.bind(this));
   }
 
   unbind () {
     this.el.removeEventListener('submit', this.bound.submit);
+    this.appEvents.remove('login', namespace);
   }
 
   render () {
