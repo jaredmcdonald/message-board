@@ -1,5 +1,6 @@
 let contentRequestHelper = require('../helper/content-request-helper'),
     ContentRouter = require('../helper/content-router'),
+    SubmitView = require('./submit-view'),
     IndexView = require('./index-view'),
     ThreadView = require('./thread-view');
 
@@ -26,6 +27,11 @@ module.exports = class ContentView {
   index () {
     this.destroyView();
     this.view = new IndexView(this);
+  }
+
+  submitForm () {
+    this.destroyView();
+    this.view = new SubmitView(this);
   }
 
   thread (id) {

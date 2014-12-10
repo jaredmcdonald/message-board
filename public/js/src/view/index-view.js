@@ -5,7 +5,8 @@ module.exports = class IndexView {
     this.el = parentView.el;
     this.templates = parentView.templates;
     this.request = parentView.requests.index;
-    this.registry = parentView.registry;
+    this.appEvents = parentView.appEvents;
+    this.appRegistry = parentView.appRegistry;
     this.parentView = parentView;
     this.model = new IndexModel();
     this.initialize();
@@ -15,6 +16,12 @@ module.exports = class IndexView {
     this.createBoundHandlers();
     this.bindEvents();
     this.request(this.handleResponse.bind(this));
+
+    this.appEvents.listen('login', this.loginHandler.bind(this));
+  }
+
+  loginHandler (data) {
+    this.render(data.isLoggedIn);
   }
 
   handleResponse (data) {
@@ -22,8 +29,10 @@ module.exports = class IndexView {
     this.render();
   }
 
-  render () {
+  render (isLoggedIn) {
+    isLoggedIn = typeof isLoggedIn === 'boolean' ? isLoggedIn : this.appRegistry.get('isLoggedIn');
     this.el.innerHTML = this.templates.index.render({
+      isLoggedIn,
       items: this.model.getData()
     });
   }
@@ -38,6 +47,9 @@ module.exports = class IndexView {
     if (/item-link/.test(event.target.className)) {
       event.preventDefault();
       this.parentView.thread(event.target.dataset.id);
+    } else if (/submit-link/.test(event.target.className)) {
+      event.preventDefault();
+      this.parentView.submitForm();
     }
   }
 

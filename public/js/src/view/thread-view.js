@@ -68,7 +68,7 @@ module.exports = class ThreadView {
   }
 
   render (isLoggedIn) {
-    if (isLoggedIn === undefined) isLoggedIn = this.appRegistry.get('isLoggedIn');
+    isLoggedIn = typeof isLoggedIn === 'boolean' ? isLoggedIn : this.appRegistry.get('isLoggedIn');
     this.el.innerHTML = this.generateThreadHTML.bind(this)(this.model.getData(), isLoggedIn)
   }
 
