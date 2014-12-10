@@ -25,7 +25,10 @@ gulp.task('templates', function () {
 gulp.task('css', function () {
   gulp.src(CSS_SRC + '/*.scss')
     .pipe(sourcemaps.init())
-    .pipe(sass())
+    .pipe(sass({
+      sourceComments : false,
+      outputStyle : 'compressed'
+    }))
     .pipe(sourcemaps.write({ sourceRoot: '/sass'})) // otherwise it comes out as '/source'
     .pipe(gulp.dest(CSS_DIST))
 })

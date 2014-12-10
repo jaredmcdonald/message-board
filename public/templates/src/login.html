@@ -2,11 +2,16 @@
   <p>Hi, {{username}}. <a href="#" class="logout">Log out</a></p>
 {{/loggedIn}}
 {{^loggedIn}}
-  <form name="login" id="loginForm" method="POST" action="/api/v1/user/login">
-    <p class="inline">Log in:</p>
-    <input type="text" name="username" placeholder="username"></input>
-    <input type="password" name="password" placeholder="password"></input>
-    <input type="submit" value="submit"></input>
+  <form class="row">
+    <div class="three columns">
+      <input class="u-full-width" type="text" placeholder="Username">
+    </div>
+    <div class="three columns">
+      <input class="u-full-width" type="password" placeholder="Password">
+    </div>
+    <div class="six columns">
+      <input class="button-primary" type="submit" value="Log In">
+    </div>
   </form>
 {{/loggedIn}}
 {{#authFailed}}

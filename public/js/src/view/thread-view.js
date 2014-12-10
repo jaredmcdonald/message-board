@@ -4,6 +4,7 @@ let ThreadModel = require('../model/thread-model');
 module.exports = class ThreadView {
   constructor (id, parentView) {
     this.id = id;
+    this.parentView = parentView;
     this.el = parentView.el;
     this.templates = parentView.templates;
     this.requests = parentView.requests;
@@ -51,6 +52,9 @@ module.exports = class ThreadView {
     if (/reply-link/.test(event.target.className)) {
       event.preventDefault();
       this.appendReplyForm(event.target);
+    } else if (/back-link/.test(event.target.className)) {
+      event.preventDefault();
+      this.parentView.index();
     }
   }
 
@@ -70,7 +74,8 @@ module.exports = class ThreadView {
 
   render (isLoggedIn) {
     isLoggedIn = typeof isLoggedIn === 'boolean' ? isLoggedIn : this.appRegistry.get('isLoggedIn');
-    this.el.innerHTML = this.generateThreadHTML.bind(this)(this.model.getData(), isLoggedIn)
+    let back = this.templates.back.render();
+    this.el.innerHTML = back + this.generateThreadHTML.bind(this)(this.model.getData(), isLoggedIn)
   }
 
   generateThreadHTML (item, isLoggedIn) {

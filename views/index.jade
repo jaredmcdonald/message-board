@@ -1,10 +1,12 @@
 extends layout
 
 block header
-  header(class="user-details")
+  nav(class="row")
+    h1= title
+  header(class="user-details row")
 
 block content
-  article(class="content")
+  article(class="content row")
 
 block js
   script(src="/js/dist/main.js")

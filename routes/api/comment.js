@@ -151,10 +151,11 @@ function postNewComment(models, comment, callback) {
   // todo: error check fields of POSTed comment
 
   new models.comment(comment).save(function (err, newComment) {
+    if (err) callback (err, null);
 
     // Send HTTP response without waiting for association
     // with user; do that work in the background (below)
-    callback(err, newComment)
+    newComment.populate('_author', callback);
 
     // Associate newly saved comment with its author
     models.user.findByIdAndUpdate(newComment._author, {

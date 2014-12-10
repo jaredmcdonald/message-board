@@ -1,6 +1,7 @@
 <div class="thread-item">
   <p class="content">{{item.content}}</p>
   <p class="info"><span class="points">{{item.points}} points by {{item._author.username}}</span>{{#isLoggedIn}} | <a class="reply-link" href="#" data-id="{{item.id}}">reply</a>{{/isLoggedIn}}</p>
+  <hr />
   {{#nested}}
     <div class="children">
       {{{nested}}}
