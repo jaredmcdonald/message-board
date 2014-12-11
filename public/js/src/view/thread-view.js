@@ -1,4 +1,3 @@
-const namespace = 'ThreadView';
 let ThreadModel = require('../model/thread-model');
 
 module.exports = class ThreadView {
@@ -11,11 +10,21 @@ module.exports = class ThreadView {
     this.appRegistry = parentView.appRegistry;
     this.appEvents = parentView.appEvents;
     this.model = new ThreadModel(this.id);
+
+    const events = {
+      submit : 'submit.content',
+      click  : 'click.content',
+      login  : 'login'
+    },
+    namespace = 'ThreadView';
+
+    this.events = events;
+    this.namespace = namespace;
+
     this.initialize();
   }
 
   initialize () {
-    this.createBoundHandlers();
     this.bindEvents();
     this.requests.thread(this.id, this.handleResponse.bind(this));
   }
@@ -29,29 +38,22 @@ module.exports = class ThreadView {
     this.render();
   }
 
-  createBoundHandlers () {
-    this.bound = {
-      click: this.clickListener.bind(this),
-      submit: this.submitListener.bind(this)
-    }
-  }
-
   bindEvents () {
-    this.el.addEventListener('click', this.bound.click);
-    this.el.addEventListener('submit', this.bound.submit);
-    this.appEvents.listen('login', namespace, this.loginHandler.bind(this));
+    this.appEvents.listen(this.events.click, this.namespace, this.clickListener.bind(this));
+    this.appEvents.listen(this.events.submit, this.namespace, this.submitListener.bind(this));
+    this.appEvents.listen(this.events.login, this.namespace, this.loginHandler.bind(this));
   }
 
   unbind () {
-    this.el.removeEventListener('click', this.bound.click);
-    this.el.addEventListener('submit', this.bound.submit);
-    this.appEvents.remove('login', namespace);
+    this.appEvents.remove(this.events.click, this.namespace);
+    this.appEvents.remove(this.events.submit, this.namespace);
+    this.appEvents.remove(this.events.login, this.namespace);
   }
 
   clickListener (event) {
     if (/reply-link/.test(event.target.className)) {
       event.preventDefault();
-      this.appendReplyForm(event.target);
+      this.appendReplyForm(event.target.parentElement.parentElement, event.target.dataset.id);
     } else if (/back-link/.test(event.target.className)) {
       event.preventDefault();
       this.parentView.index();
@@ -63,7 +65,7 @@ module.exports = class ThreadView {
 
     this.requests.create({
       content: event.target[0].value,
-      parentId: event.target.previousSibling.dataset.id
+      parentId: event.target.dataset.id
     }, this.createReplyCallback.bind(this));
   }
 
@@ -90,8 +92,8 @@ module.exports = class ThreadView {
     });
   }
 
-  appendReplyForm (element) {
-    element.parentElement.innerHTML = element.parentElement.innerHTML + this.templates.submit.render();
+  appendReplyForm (element, replyTo) {
+    element.innerHTML += this.templates.submit.render({ replyTo });
   }
 
 }

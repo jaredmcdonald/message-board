@@ -1,4 +1,3 @@
-const namespace = 'IndexView';
 let IndexModel = require('../model/index-model');
 
 module.exports = class IndexView {
@@ -10,11 +9,20 @@ module.exports = class IndexView {
     this.appRegistry = parentView.appRegistry;
     this.parentView = parentView;
     this.model = new IndexModel();
+
+    const events = {
+      click : 'click.content',
+      login : 'login'
+    },
+    namespace = 'IndexView';
+
+    this.events = events;
+    this.namespace = namespace;
+
     this.initialize();
   }
 
   initialize () {
-    this.createBoundHandlers();
     this.request(this.handleResponse.bind(this));
 
     this.bindEvents();
@@ -37,12 +45,6 @@ module.exports = class IndexView {
     });
   }
 
-  createBoundHandlers () {
-    this.bound = {
-      click : this.clickListener.bind(this)
-    };
-  }
-
   clickListener (event) {
     if (/item-link/.test(event.target.className)) {
       event.preventDefault();
@@ -54,12 +56,12 @@ module.exports = class IndexView {
   }
 
   bindEvents () {
-    this.el.addEventListener('click', this.bound.click);
-    this.appEvents.listen('login', namespace, this.loginHandler.bind(this));
+    this.appEvents.listen(this.events.click, this.namespace, this.clickListener.bind(this));
+    this.appEvents.listen(this.events.login, this.namespace, this.loginHandler.bind(this));
   }
 
   unbind () {
-    this.el.removeEventListener('click', this.bound.click);
-    this.appEvents.remove('login', namespace);
+    this.appEvents.remove(this.events.click, this.namespace);
+    this.appEvents.remove(this.events.login, this.namespace);
   }
 }

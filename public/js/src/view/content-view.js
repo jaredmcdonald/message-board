@@ -12,6 +12,15 @@ module.exports = class ContentView {
     this.appRegistry = appRegistry;
     this.appEvents = appEvents;
 
+    const events = {
+      click  : 'click',
+      submit : 'submit'
+    },
+    namespace = '.content';
+
+    this.events = events;
+    this.namespace = namespace;
+
     this.initialize();
   }
 
@@ -20,8 +29,16 @@ module.exports = class ContentView {
     this.router.register('thread', this.thread.bind(this));
 
     this.el = document.querySelector('.content');
+    this.createEventListeners();
 
     this.router.initialize();
+  }
+
+  createEventListeners () {
+    this.el.addEventListener(this.events.click,
+      this.appEvents.trigger.bind(this.appEvents, this.events.click + this.namespace));
+    this.el.addEventListener(this.events.submit,
+      this.appEvents.trigger.bind(this.appEvents, this.events.submit + this.namespace));
   }
 
   index () {

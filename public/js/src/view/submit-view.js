@@ -1,5 +1,3 @@
-const namespace = 'SubmitView';
-
 module.exports = class SubmitView {
   constructor (parentView) {
     this.parentView = parentView;
@@ -9,11 +7,20 @@ module.exports = class SubmitView {
     this.appRegistry = parentView.appRegistry;
     this.requests = parentView.requests;
 
+    const events = {
+      submit : 'submit.content',
+      click  : 'click.content',
+      login  : 'login'
+    },
+    namespace = 'SubmitView';
+
+    this.events = events;
+    this.namespace = namespace;
+
     this.initialize();
   }
 
   initialize () {
-    this.createBoundHandlers();
     this.bindEvents();
     this.render();
   }
@@ -24,10 +31,11 @@ module.exports = class SubmitView {
     }
   }
 
-  createBoundHandlers () {
-    this.bound = {
-      submit : this.submitListener.bind(this)
-    };
+  clickListener (event) {
+    if (/back-link/.test(event.target.className)) {
+      event.preventDefault();
+      this.parentView.index();
+    }
   }
 
   submitListener (event) {
@@ -42,18 +50,19 @@ module.exports = class SubmitView {
   }
 
   bindEvents () {
-    this.el.addEventListener('submit', this.bound.submit);
-    
     // listen for logout (a login event with loggedIn: false)
-    this.appEvents.listen('login', namespace, this.logoutHandler.bind(this));
+    this.appEvents.listen(this.events.login, this.namespace, this.logoutHandler.bind(this));
+    this.appEvents.listen(this.events.click, this.namespace, this.clickListener.bind(this));
+    this.appEvents.listen(this.events.submit, this.namespace, this.submitListener.bind(this));
   }
 
   unbind () {
-    this.el.removeEventListener('submit', this.bound.submit);
-    this.appEvents.remove('login', namespace);
+    this.appEvents.remove(this.events.submit, this.namespace);
+    this.appEvents.remove(this.events.click, this.namespace);
+    this.appEvents.remove(this.events.login, this.namespace);
   }
 
   render () {
-    this.el.innerHTML = this.templates.submit.render();
+    this.el.innerHTML = this.templates.back.render() + this.templates.submit.render();
   }
 }
