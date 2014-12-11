@@ -25,7 +25,11 @@ module.exports = class EventRegistry {
 
   // Remove the event handler `namespace` for event `name`
   remove (name, namespace) {
+    if (!this.registered[name]) return false;
+
     let index = this.registered[name].findIndex((obj) => obj.namespace === namespace);
+    if (index > 0) return false;
+
     this.registered[name].splice(index, 1);
   }
 }

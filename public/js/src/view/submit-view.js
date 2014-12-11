@@ -21,6 +21,9 @@ module.exports = class SubmitView {
   }
 
   initialize () {
+    if (!this.appRegistry.get('isLoggedIn')) {
+      return this.parentView.index();
+    }
     this.bindEvents();
     this.render();
   }

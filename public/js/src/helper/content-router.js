@@ -1,13 +1,24 @@
-const thread = /^#\/comment\/([a-f0-9]{24})$/;
-
 module.exports = class ContentRouter {
 
   constructor () {
-    this.callbacks = {
-      index  : function () {},
-      thread : function () {}
+    const noop = function () {},
+    regexes = {
+      thread : /^#\/comment\/([a-f0-9]{24})$/,
+      submit : /^#\/submit(?:\/)?$/
     };
+
+    this.regexes = regexes;
+    this.callbacks = {
+      index  : noop,
+      thread : noop,
+      submit : noop
+    };
+
     this.initialized = false;
+  }
+
+  pushState (data, url) {
+    window.history.pushState(data, '', url)
   }
 
   initialize () {
@@ -25,7 +36,11 @@ module.exports = class ContentRouter {
   }
 
   route () {
-    let match = window.location.hash.match(thread);
+    if (this.regexes.submit.test(window.location.hash)) {
+      return this.callbacks.submit();
+    }
+
+    let match = window.location.hash.match(this.regexes.thread);
 
     if (match) {
       this.callbacks.thread(match[1]);

@@ -27,6 +27,7 @@ module.exports = class ContentView {
   initialize () {
     this.router.register('index', this.index.bind(this));
     this.router.register('thread', this.thread.bind(this));
+    this.router.register('submit', this.submitForm.bind(this));
 
     this.el = document.querySelector('.content');
     this.createEventListeners();
@@ -43,16 +44,19 @@ module.exports = class ContentView {
 
   index () {
     this.destroyView();
+    this.router.pushState({}, '#/');
     this.view = new IndexView(this);
   }
 
   submitForm () {
     this.destroyView();
+    this.router.pushState({}, '#/submit/');
     this.view = new SubmitView(this);
   }
 
   thread (id) {
     this.destroyView();
+    this.router.pushState({}, `#/comment/${id}`);
     this.view = new ThreadView(id, this);
   }
 
