@@ -1,10 +1,11 @@
 module.exports = function (mongoose, materializedPlugin) {
   var commentSchema = mongoose.Schema({
     _author   : { type: mongoose.Schema.Types.ObjectId, ref: 'User', required : true },
-    content   : { type: String,  required: true },
+    title     : { type: String, required : true },
+    content   : { type: String, required : true },
     created   : Number,
     points    : { type: Number,  default : 0 },
-    deleted   : { type: Boolean, default: false }
+    deleted   : { type: Boolean, default : false }
   });
 
   // Use "materialized path" strategy for comment tree structure.

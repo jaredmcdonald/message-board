@@ -33,7 +33,7 @@ module.exports = function (models) {
   // GET a specific thread.
   router.get('/:id/thread', function (req, res) {
     getCommentThread(req.params.id, models, sendThreadData.bind(null, res))
-  })
+  });
 
   // DELETE a specific comment.
   router.delete('/:id', function (req, res) {
@@ -42,8 +42,8 @@ module.exports = function (models) {
       if (!comment) return utils.notFound(res);
 
       utils.noContent(res);
-    })
-  })
+    });
+  });
 
   // POST a new comment.
   router.post('/', function (req, res) {
@@ -57,7 +57,7 @@ module.exports = function (models) {
 
       utils.created(res, newComment);
     });
-  })
+  });
 
   return router;
 }
@@ -166,5 +166,5 @@ function postNewComment(models, comment, callback) {
       console.log(err || 'successful association of comment ' + newComment._id + ' with user ' + user._id);
     });
 
-  })
+  });
 }

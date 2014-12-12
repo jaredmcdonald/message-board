@@ -49,7 +49,8 @@ module.exports = class SubmitView {
   submitListener (event) {
     event.preventDefault();
     this.requests.create({
-      content : event.target[0].value
+      title   : event.target[0].value,
+      content : event.target[1].value
     }, this.handleResponse.bind(this));
   }
 

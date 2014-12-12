@@ -81,8 +81,9 @@ module.exports = class ThreadView {
     event.preventDefault();
 
     this.requests.create({
-      content: event.target[0].value,
-      parentId: event.target.dataset.id
+      title    : event.target[0].value,
+      content  : event.target[1].value,
+      parentId : event.target.dataset.id
     }, this.createReplyCallback.bind(this));
   }
 

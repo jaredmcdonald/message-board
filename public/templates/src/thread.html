@@ -1,4 +1,5 @@
 <div class="thread-item">
+  <h4>{{item.title}}</h4>
   <p class="content">{{item.content}}</p>
   <p class="info"><span class="points">{{item.points}} points by {{item._author.username}}</span>{{#isLoggedIn}} | <a class="reply-link" href="#" data-id="{{item.id}}">reply</a>{{/isLoggedIn}}</p>
   <hr />
