@@ -1,31 +1,47 @@
 let IndexModel = require('../model/index-model');
 
 module.exports = class IndexView {
-  constructor (parentView) {
+  constructor (parentView, data, isPageLoad) {
+    this.parentView = parentView;
+    this.isPageLoad = isPageLoad;
     this.el = parentView.el;
     this.templates = parentView.templates;
     this.request = parentView.requests.index;
     this.appEvents = parentView.appEvents;
     this.appRegistry = parentView.appRegistry;
     this.parentView = parentView;
+    this.router = parentView.router;
     this.model = new IndexModel();
 
     const events = {
       click : 'click.content',
       login : 'login'
     },
-    namespace = 'IndexView';
+    namespace = 'IndexView',
+    url = '#/';
 
     this.events = events;
     this.namespace = namespace;
+    this.url = url;
+
+    this.fromPopState = false;
+
+    if (data) {
+      this.fromPopState = true;
+      this.model.setData({ data });
+    }
 
     this.initialize();
   }
 
   initialize () {
-    this.request(this.handleResponse.bind(this));
-
     this.bindEvents();
+
+    if (!this.fromPopState) {
+      this.request(this.handleResponse.bind(this));
+    } else {
+      this.render();
+    }
   }
 
   loginHandler (data) {
@@ -34,6 +50,9 @@ module.exports = class IndexView {
 
   handleResponse (data) {
     this.model.setData(data);
+
+    this.router[this.isPageLoad ? 'replaceState' : 'pushState'](this.model.getData(), this.url);
+
     this.render();
   }
 

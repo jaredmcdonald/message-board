@@ -1,14 +1,16 @@
 let ThreadModel = require('../model/thread-model');
 
 module.exports = class ThreadView {
-  constructor (id, parentView) {
+  constructor (id, parentView, data, isPageLoad) {
     this.id = id;
     this.parentView = parentView;
+    this.isPageLoad = isPageLoad;
     this.el = parentView.el;
     this.templates = parentView.templates;
     this.requests = parentView.requests;
     this.appRegistry = parentView.appRegistry;
     this.appEvents = parentView.appEvents;
+    this.router = parentView.router;
     this.model = new ThreadModel(this.id);
 
     const events = {
@@ -16,17 +18,31 @@ module.exports = class ThreadView {
       click  : 'click.content',
       login  : 'login'
     },
-    namespace = 'ThreadView';
+    namespace = 'ThreadView',
+    url = `#/comment/${this.id}`;
 
     this.events = events;
     this.namespace = namespace;
+    this.url = url;
+
+    this.fromPopState = false;
+
+    if (data) {
+      this.fromPopState = true;
+      this.model.setData({ data });
+    }
 
     this.initialize();
   }
 
   initialize () {
     this.bindEvents();
-    this.requests.thread(this.id, this.handleResponse.bind(this));
+
+    if (!this.fromPopState) {
+      this.requests.thread(this.id, this.handleResponse.bind(this));
+    } else {
+      this.render();
+    }
   }
 
   loginHandler (data) {
@@ -35,6 +51,7 @@ module.exports = class ThreadView {
 
   handleResponse (response) {
     this.model.setData(response);
+    this.router[this.isPageLoad ? 'replaceState' : 'pushState'](this.model.getData(), this.url);
     this.render();
   }
 
@@ -56,7 +73,7 @@ module.exports = class ThreadView {
       this.appendReplyForm(event.target.parentElement.parentElement, event.target.dataset.id);
     } else if (/back-link/.test(event.target.className)) {
       event.preventDefault();
-      this.parentView.index();
+      this.router.back();
     }
   }
 

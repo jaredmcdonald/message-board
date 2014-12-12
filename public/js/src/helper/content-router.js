@@ -18,13 +18,21 @@ module.exports = class ContentRouter {
   }
 
   pushState (data, url) {
-    window.history.pushState(data, '', url)
+    window.history.pushState(data, '', url);
+  }
+
+  replaceState (data) {
+    window.history.replaceState(data, '', window.location.hash);
+  }
+
+  back () {
+    window.history.back();
   }
 
   initialize () {
     if (this.initialized) return false;
 
-    window.addEventListener('hashchange', this.route.bind(this));
+    window.addEventListener('popstate', this.route.bind(this));
     this.route();
 
     this.initialized = true;
@@ -35,17 +43,17 @@ module.exports = class ContentRouter {
     this.callbacks[type] = callback;
   }
 
-  route () {
+  route (event = { state : null }) {
     if (this.regexes.submit.test(window.location.hash)) {
-      return this.callbacks.submit();
+      return this.callbacks.submit(!event.state);
     }
 
     let match = window.location.hash.match(this.regexes.thread);
 
     if (match) {
-      this.callbacks.thread(match[1]);
+      this.callbacks.thread(match[1], event.state, !event.state);
     } else {
-      this.callbacks.index()
+      this.callbacks.index(event.state, !event.state);
     }
   }
 

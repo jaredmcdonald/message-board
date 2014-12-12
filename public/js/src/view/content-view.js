@@ -42,22 +42,19 @@ module.exports = class ContentView {
       this.appEvents.trigger.bind(this.appEvents, this.events.submit + this.namespace));
   }
 
-  index () {
+  index (data, isPageLoad = false) {
     this.destroyView();
-    this.router.pushState({}, '#/');
-    this.view = new IndexView(this);
+    this.view = new IndexView(this, data, isPageLoad);
   }
 
-  submitForm () {
+  submitForm (isPageLoad = false) {
     this.destroyView();
-    this.router.pushState({}, '#/submit/');
-    this.view = new SubmitView(this);
+    this.view = new SubmitView(this, isPageLoad);
   }
 
-  thread (id) {
+  thread (id, data, isPageLoad = false) {
     this.destroyView();
-    this.router.pushState({}, `#/comment/${id}`);
-    this.view = new ThreadView(id, this);
+    this.view = new ThreadView(id, this, data, isPageLoad);
   }
 
   destroyView () {

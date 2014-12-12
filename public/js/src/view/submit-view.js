@@ -1,23 +1,27 @@
 module.exports = class SubmitView {
-  constructor (parentView) {
+  constructor (parentView, isPageLoad) {
     this.parentView = parentView;
+    this.isPageLoad = isPageLoad;
     this.el = parentView.el;
     this.templates = parentView.templates;
     this.appEvents = parentView.appEvents;
     this.appRegistry = parentView.appRegistry;
     this.requests = parentView.requests;
+    this.router = parentView.router;
 
     const events = {
       submit : 'submit.content',
       click  : 'click.content',
       login  : 'login'
     },
-    namespace = 'SubmitView';
+    namespace = 'SubmitView',
+    url = '#/submit';
 
     this.events = events;
     this.namespace = namespace;
+    this.url = url;
 
-    this.initialize();
+    this.initialize(isPageLoad);
   }
 
   initialize () {
@@ -25,6 +29,7 @@ module.exports = class SubmitView {
       return this.parentView.index();
     }
     this.bindEvents();
+    this.router[this.isPageLoad ? 'replaceState' : 'pushState'](true, this.url);
     this.render();
   }
 
@@ -37,7 +42,7 @@ module.exports = class SubmitView {
   clickListener (event) {
     if (/back-link/.test(event.target.className)) {
       event.preventDefault();
-      this.parentView.index();
+      this.router.back();
     }
   }
 
