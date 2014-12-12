@@ -5,7 +5,6 @@
 var codes = require('http').STATUS_CODES;
 
 function respond (res, status, data) {
-
   res.status(status);
 
   // contentless response

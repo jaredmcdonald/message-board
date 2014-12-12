@@ -30,6 +30,30 @@ module.exports = function (models) {
     });
   });
 
+  // POST to upvote a comment.
+  router.post('/:id/up', function (req, res) {
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+
+    newVote(session.getUserId(req), req.params.id, true, models.comment, function (err, updatedComment) {
+      if (err) return utils.internalServerError(res);
+      if (!updatedComment) return utils.notAuthorized(res, 'can only vote once per comment');
+
+      utils.ok(res, updatedComment);
+    });
+  });
+
+  // POST to downvote a comment.
+  router.post('/:id/down', function (req, res) {
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+
+    newVote(session.getUserId(req), req.params.id, false, models.comment, function (err, updatedComment) {
+      if (err) return utils.internalServerError(res);
+      if (!updatedComment) return utils.notAuthorized(res, 'can only vote once per comment');
+
+      utils.ok(res, updatedComment);
+    });
+  });
+
   // GET a specific thread.
   router.get('/:id/thread', function (req, res) {
     getCommentThread(req.params.id, models, sendThreadData.bind(null, res))
@@ -147,7 +171,32 @@ function getAuthors (item, arr) {
   return arr;
 }
 
-function postNewComment(models, comment, callback) {
+function newVote (userId, commentId, isUpvote, CommentModel, callback) {
+
+  CommentModel.findOne({
+    _id  : commentId,
+    $nor : [
+      {
+        upvotes : {
+          $in : [ userId ]
+        }
+      },
+      {
+        downvotes : {
+          $in : [ userId ]
+        }
+      }
+    ]
+  }, function (err, comment) {
+    if (err) return callback(err, null);
+    if (!comment) return callback(null, null);
+
+    comment[isUpvote ? 'upvotes' : 'downvotes'].push(userId);
+    comment.save(callback);
+  });
+}
+
+function postNewComment (models, comment, callback) {
   // todo: error check fields of POSTed comment
 
   new models.comment(comment).save(function (err, newComment) {

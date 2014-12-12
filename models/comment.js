@@ -3,8 +3,10 @@ module.exports = function (mongoose, materializedPlugin) {
     _author   : { type: mongoose.Schema.Types.ObjectId, ref: 'User', required : true },
     title     : { type: String, required : true },
     content   : { type: String, required : true },
+    upvotes   : { type: [ mongoose.Schema.Types.ObjectId ], ref: 'User' },
+    downvotes : { type: [ mongoose.Schema.Types.ObjectId ], ref: 'User' },
+    points    : { type: Number, default: 0 },
     created   : Number,
-    points    : { type: Number,  default : 0 },
     deleted   : { type: Boolean, default : false }
   });
 
@@ -17,6 +19,7 @@ module.exports = function (mongoose, materializedPlugin) {
     if (!this.created) {
       this.created = Date.now();
     }
+    this.points = this.upvotes.length - this.downvotes.length;
     next();
   });
 
