@@ -36,7 +36,7 @@ module.exports = class ThreadView {
   }
 
   initialize () {
-    this.bindEvents();
+    this.bindDomEvents();
 
     if (!this.fromPopState) {
       this.requests.thread(this.id, this.handleResponse.bind(this));
@@ -53,12 +53,19 @@ module.exports = class ThreadView {
     this.model.setData(response);
     this.router[this.isPageLoad ? 'replaceState' : 'pushState'](this.model.getData(), this.url);
     this.render();
+    this.bindLoginEvent();
   }
 
-  bindEvents () {
+  bindDomEvents () {
     this.appEvents.listen(this.events.click, this.namespace, this.clickListener.bind(this));
     this.appEvents.listen(this.events.submit, this.namespace, this.submitListener.bind(this));
-    this.appEvents.listen(this.events.login, this.namespace, this.loginHandler.bind(this));
+  }
+
+  bindLoginEvent () {
+    if (!this.loginBound) {
+      this.appEvents.listen(this.events.login, this.namespace, this.loginHandler.bind(this));
+      this.loginBound = true;
+    }
   }
 
   unbind () {

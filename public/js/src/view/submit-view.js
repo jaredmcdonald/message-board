@@ -28,7 +28,7 @@ module.exports = class SubmitView {
     if (!this.appRegistry.get('isLoggedIn')) {
       return this.parentView.index();
     }
-    this.bindEvents();
+    this.bindDomEvents();
     this.router[this.isPageLoad ? 'replaceState' : 'pushState'](true, this.url);
     this.render();
   }
@@ -56,13 +56,20 @@ module.exports = class SubmitView {
 
   handleResponse (data) {
     this.parentView.index();
+    this.bindLoginEvent();
   }
 
-  bindEvents () {
-    // listen for logout (a login event with loggedIn: false)
-    this.appEvents.listen(this.events.login, this.namespace, this.logoutHandler.bind(this));
+  bindDomEvents () {
     this.appEvents.listen(this.events.click, this.namespace, this.clickListener.bind(this));
     this.appEvents.listen(this.events.submit, this.namespace, this.submitListener.bind(this));
+  }
+
+  bindLoginEvent () {
+    if (!this.loginBound) {
+        // listen for logout (a login event with loggedIn: false)
+        this.appEvents.listen(this.events.login, this.namespace, this.logoutHandler.bind(this));
+        this.loginBound = true;
+    }
   }
 
   unbind () {
