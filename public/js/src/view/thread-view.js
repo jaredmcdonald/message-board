@@ -70,7 +70,7 @@ module.exports = class ThreadView {
   clickListener (event) {
     if (/reply-link/.test(event.target.className)) {
       event.preventDefault();
-      this.appendReplyForm(event.target.parentElement.parentElement, event.target.dataset.id);
+      this.appendReplyForm(event.target, event.target.parentElement.parentElement, event.target.dataset.id);
     } else if (/back-link/.test(event.target.className)) {
       event.preventDefault();
       this.router.back();
@@ -110,7 +110,8 @@ module.exports = class ThreadView {
     });
   }
 
-  appendReplyForm (element, replyTo) {
+  appendReplyForm (linkElement, element, replyTo) {
+    linkElement.outerHTML = '';
     element.innerHTML += this.templates.submit.render({ replyTo });
   }
 
