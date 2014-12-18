@@ -1,7 +1,7 @@
 /*
-*  common http API tasks
-*
-*/
+ *  common http API tasks
+ *
+ */
 var codes = require('http').STATUS_CODES;
 
 function respond (res, status, data) {
@@ -24,20 +24,31 @@ function respond (res, status, data) {
   res.send(body);
 }
 
+function addMetadata (response, metadata) {
+  if (typeof metadata === 'object') {
+    Object.keys(metadata).forEach(function (key) {
+      response[key] = metadata[key];
+    });
+  }
+  return response;
+}
+
 
 /*
-*  responses
-*
-*/
+ *  responses
+ *
+ */
 
 // 200 OK
-exports.ok = function (res, data) {
-  respond(res, 200, { data : data });
+exports.ok = function (res, data, metadata) {
+  var response = addMetadata({ data : data }, metadata);
+  respond(res, 200, response);
 }
 
 // 201 Created
-exports.created = function (res, data) {
-  respond(res, 201, { data : data });
+exports.created = function (res, data, metadata) {
+  var response = addMetadata({ data : data }, metadata);
+  respond(res, 201, response);
 }
 
 // 204 No Content

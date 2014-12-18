@@ -11,13 +11,13 @@ module.exports = function (models) {
     models.comment.find({}, '-__v -_w').exec(function (err, comments) {
       if (err) return utils.internalServerError(res);
 
-      utils.ok(res, comments);
+      utils.ok(res, comments, { loggedIn : session.isLoggedIn(req) });
     });
   });
 
   // GET the top 20 parentless (top-level) comments.
   router.get('/root', function(req, res) {
-    getIndexData(models.comment, sendTopLevelThreads.bind(null, res));
+    getIndexData(models.comment, sendTopLevelThreads.bind(null, req, res));
   });
 
   // GET a specific comment.
@@ -26,7 +26,7 @@ module.exports = function (models) {
       if (err) return utils.internalServerError(res);
       if (!comment) return utils.notFound(res);
 
-      utils.ok(res, comment);
+      utils.ok(res, comment, { loggedIn : session.isLoggedIn(req) });
     });
   });
 
@@ -56,7 +56,7 @@ module.exports = function (models) {
 
   // GET a specific thread.
   router.get('/:id/thread', function (req, res) {
-    getCommentThread(req.params.id, models, sendThreadData.bind(null, res))
+    getCommentThread(req.params.id, models, sendThreadData.bind(null, req, res))
   });
 
   // DELETE a specific comment.
@@ -79,24 +79,24 @@ module.exports = function (models) {
     postNewComment(models, comment, function (err, newComment) {
       if (err) return utils.internalServerError(res);
 
-      utils.created(res, newComment);
+      utils.created(res, newComment, { loggedIn : session.isLoggedIn(req) });
     });
   });
 
   return router;
 }
 
-function sendTopLevelThreads (res, err, comments) {
+function sendTopLevelThreads (req, res, err, comments) {
   if (err) return utils.internalServerError(res);
 
-  utils.ok(res, comments);
+  utils.ok(res, comments, { loggedIn : session.isLoggedIn(req) });
 }
 
-function sendThreadData (res, err, thread) {
+function sendThreadData (req, res, err, thread) {
   if (err) return utils.internalServerError(res);
   if (!thread) return utils.notFound(res);
 
-  utils.ok(res, thread);
+  utils.ok(res, thread, { loggedIn : session.isLoggedIn(req) });
 }
 
 // DB query for root-level threads

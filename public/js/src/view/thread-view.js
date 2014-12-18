@@ -8,7 +8,6 @@ module.exports = class ThreadView {
     this.el = parentView.el;
     this.templates = parentView.templates;
     this.requests = parentView.requests;
-    this.appRegistry = parentView.appRegistry;
     this.appEvents = parentView.appEvents;
     this.router = parentView.router;
     this.model = new ThreadModel(this.id);
@@ -52,7 +51,7 @@ module.exports = class ThreadView {
   handleResponse (response) {
     this.model.setData(response);
     this.router[this.isPageLoad ? 'replaceState' : 'pushState'](this.model.getData(), this.url);
-    this.render();
+    this.render(response.loggedIn);
     this.bindLoginEvent();
   }
 
@@ -96,11 +95,10 @@ module.exports = class ThreadView {
 
   createReplyCallback (response) {
     this.model.insert(response.data);
-    this.render();
+    this.render(response.loggedIn);
   }
 
   render (isLoggedIn) {
-    isLoggedIn = typeof isLoggedIn === 'boolean' ? isLoggedIn : this.appRegistry.get('isLoggedIn');
     let back = this.templates.back.render();
     this.el.innerHTML = back + this.generateThreadHTML.bind(this)(this.model.getData(), isLoggedIn)
   }

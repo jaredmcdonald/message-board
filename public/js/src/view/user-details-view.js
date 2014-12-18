@@ -3,12 +3,11 @@ let UserDetailsModel = require('../model/user-details-model'),
 
 module.exports = class UserDetailsView {
 
-  constructor (template, Request, appRegistry, appEvents) {
-    this.model = new UserDetailsModel(appRegistry, appEvents);
+  constructor (template, Request, appEvents) {
+    this.model = new UserDetailsModel(appEvents);
     this.requests = loginRequestHelper(Request);
     this.template = template;
     this.appEvents = appEvents;
-    this.appRegistry = appRegistry;
     this.initialize();
   }
 

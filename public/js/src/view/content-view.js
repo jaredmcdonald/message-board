@@ -5,11 +5,10 @@ let contentRequestHelper = require('../helper/content-request-helper'),
     ThreadView = require('./thread-view');
 
 module.exports = class ContentView {
-  constructor (templates, Request, appRegistry, appEvents) {
+  constructor (templates, Request, appEvents) {
     this.templates = templates;
     this.requests = contentRequestHelper(Request);
     this.router = new ContentRouter();
-    this.appRegistry = appRegistry;
     this.appEvents = appEvents;
 
     const events = {

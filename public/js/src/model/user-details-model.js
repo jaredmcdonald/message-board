@@ -4,16 +4,8 @@ let defaults = {
 };
 
 module.exports = class UserDetailsModel {
-  constructor (appRegistry, appEvents) {
+  constructor (appEvents) {
     this.appEvents = appEvents;
-    this.appRegistry = appRegistry;
-
-    let self = this;
-    this.appRegistry.register('isLoggedIn', function () {
-      return self.loggedIn;
-    });
-
-    this.setData(defaults);
   }
 
   setData (data) {

@@ -8,7 +8,6 @@ module.exports = class IndexView {
     this.templates = parentView.templates;
     this.request = parentView.requests.index;
     this.appEvents = parentView.appEvents;
-    this.appRegistry = parentView.appRegistry;
     this.parentView = parentView;
     this.router = parentView.router;
     this.model = new IndexModel();
@@ -45,7 +44,7 @@ module.exports = class IndexView {
   }
 
   loginHandler (data) {
-    this.render(data.isLoggedIn);
+    this.render(data.loggedIn);
   }
 
   handleResponse (data) {
@@ -53,11 +52,10 @@ module.exports = class IndexView {
 
     this.router[this.isPageLoad ? 'replaceState' : 'pushState'](this.model.getData(), this.url);
 
-    this.render();
+    this.render(data.loggedIn);
   }
 
   render (isLoggedIn) {
-    isLoggedIn = typeof isLoggedIn === 'boolean' ? isLoggedIn : this.appRegistry.get('isLoggedIn');
     this.el.innerHTML = this.templates.index.render({
       isLoggedIn,
       items: this.model.getData()
