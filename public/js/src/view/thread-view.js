@@ -45,7 +45,7 @@ module.exports = class ThreadView {
   }
 
   loginHandler (data) {
-    this.model.setLoggedIn(data);
+    this.model.setLoggedIn(data.loggedIn);
     this.render();
   }
 
