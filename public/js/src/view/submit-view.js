@@ -20,7 +20,8 @@ module.exports = class SubmitView {
     this.namespace = namespace;
     this.url = url;
 
-    this.initialize(isPageLoad);
+    this.isPageLoad = isPageLoad;
+    this.initialize();
   }
 
   initialize () {

@@ -27,7 +27,7 @@ module.exports = class IndexView {
 
     if (data) {
       this.fromPopState = true;
-      this.model.setData({ data });
+      this.model.setData(data);
     }
 
     this.initialize();
@@ -44,21 +44,21 @@ module.exports = class IndexView {
   }
 
   loginHandler (data) {
-    this.render(data.loggedIn);
+    this.model.setLoggedIn(data.loggedIn);
+    this.render();
   }
 
   handleResponse (data) {
     this.model.setData(data);
-
     this.router[this.isPageLoad ? 'replaceState' : 'pushState'](this.model.getData(), this.url);
-
-    this.render(data.loggedIn);
+    this.render();
   }
 
-  render (isLoggedIn) {
+  render () {
+    let data = this.model.getData();
     this.el.innerHTML = this.templates.index.render({
-      isLoggedIn,
-      items: this.model.getData()
+      isLoggedIn : data.loggedIn,
+      items: data.data
     });
   }
 

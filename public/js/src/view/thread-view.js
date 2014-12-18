@@ -28,7 +28,7 @@ module.exports = class ThreadView {
 
     if (data) {
       this.fromPopState = true;
-      this.model.setData({ data });
+      this.model.setData(data);
     }
 
     this.initialize();
@@ -45,13 +45,14 @@ module.exports = class ThreadView {
   }
 
   loginHandler (data) {
-    this.render(data.loggedIn);
+    this.model.setLoggedIn(data);
+    this.render();
   }
 
   handleResponse (response) {
     this.model.setData(response);
     this.router[this.isPageLoad ? 'replaceState' : 'pushState'](this.model.getData(), this.url);
-    this.render(response.loggedIn);
+    this.render();
     this.bindLoginEvent();
   }
 
@@ -95,12 +96,14 @@ module.exports = class ThreadView {
 
   createReplyCallback (response) {
     this.model.insert(response.data);
+    this.router.replaceState(this.model.getData(), this.url);
     this.render(response.loggedIn);
   }
 
-  render (isLoggedIn) {
-    let back = this.templates.back.render();
-    this.el.innerHTML = back + this.generateThreadHTML.bind(this)(this.model.getData(), isLoggedIn)
+  render () {
+    let back = this.templates.back.render()
+    ,   data = this.model.getData();
+    this.el.innerHTML = back + this.generateThreadHTML.bind(this)(data.data, data.loggedIn)
   }
 
   generateThreadHTML (item, isLoggedIn) {
