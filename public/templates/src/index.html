@@ -7,7 +7,12 @@
   {{#items}}
     <li class="index-item">
       <h4><a class="item-link" href="#" data-id="{{_id}}">{{title}}</a></h4>
-      <p class="info">{{points}} points by {{_author.username}}</p>
+      <section class="item-info">
+        <span class="item-details">{{points}} points by {{_author.username}}</span>
+        {{#isLoggedIn}}
+        | <span class="item-vote">vote <a class="vote-link" href="#" data-vote="up" data-id="{{_id}}">up</a> <a class="vote-link" href="#" data-vote="down" data-id="{{_id}}">down</a></span>
+        {{/isLoggedIn}}
+      </section>
     </li>
   {{/items}}
 </ol>

@@ -23,9 +23,17 @@ module.exports = function (Request) {
       .send(data);
   }
 
+  function vote (id, type, callback) {
+    new Request(`${basePath}/${id}/${type}`, 'POST')
+      .error(console.error.bind(console))
+      .handler(callback)
+      .send();
+  }
+
   return {
     index,
     thread,
-    create
+    create,
+    vote
   };
 }

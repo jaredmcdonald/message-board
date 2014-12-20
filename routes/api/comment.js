@@ -192,7 +192,10 @@ function newVote (userId, commentId, isUpvote, CommentModel, callback) {
     if (!comment) return callback(null, null);
 
     comment[isUpvote ? 'upvotes' : 'downvotes'].push(userId);
-    comment.save(callback);
+    comment.save(function (err, newComment) {
+      if (err) return callback(err, null);
+      newComment.populate('_author', callback);
+    });
   });
 }
 

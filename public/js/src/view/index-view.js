@@ -6,7 +6,7 @@ module.exports = class IndexView {
     this.isPageLoad = isPageLoad;
     this.el = parentView.el;
     this.templates = parentView.templates;
-    this.request = parentView.requests.index;
+    this.requests = parentView.requests;
     this.appEvents = parentView.appEvents;
     this.parentView = parentView;
     this.router = parentView.router;
@@ -37,7 +37,7 @@ module.exports = class IndexView {
     this.bindEvents();
 
     if (!this.fromPopState) {
-      this.request(this.handleResponse.bind(this));
+      this.requests.index(this.handleResponse.bind(this));
     } else {
       this.render();
     }
@@ -45,6 +45,11 @@ module.exports = class IndexView {
 
   loginHandler (data) {
     this.model.setLoggedIn(data.loggedIn);
+    this.render();
+  }
+
+  voteHandler (data) {
+
     this.render();
   }
 
@@ -69,7 +74,19 @@ module.exports = class IndexView {
     } else if (/submit-link/.test(event.target.className)) {
       event.preventDefault();
       this.parentView.submitForm();
+    } else if (/vote-link/.test(event.target.className)) {
+      event.preventDefault();
+      this.vote(event.target.dataset);
     }
+  }
+
+  vote (data) {
+    this.requests.vote(data.id, data.vote, this.handleVoteResponse.bind(this));
+  }
+
+  handleVoteResponse (response) {
+    this.model.updateComment(response.data);
+    this.render();
   }
 
   bindEvents () {
