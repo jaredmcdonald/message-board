@@ -29,6 +29,7 @@
     "gulp-sourcemaps": "^1.2.8",
     "hogan": "^1.0.2",
     "mold-source-map": "^0.3.0",
+    "supervisor": "^0.6.0",
     "vinyl-source-stream": "^1.0.0"
   }
 }
