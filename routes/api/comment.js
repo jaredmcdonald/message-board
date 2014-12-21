@@ -153,7 +153,7 @@ function walkThread (thread, map, userId) {
 
   if (thread.children) {
     thread.children.forEach(function (child) {
-      walkThread(child, map);
+      walkThread(child, map, userId);
     });
   }
 

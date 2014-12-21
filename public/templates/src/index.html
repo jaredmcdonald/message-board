@@ -10,24 +10,7 @@
       <section class="item-info">
         <span class="item-details">{{points}} points by {{_author.username}}</span>
         {{#isLoggedIn}}
-        | <span class="item-vote">
-          {{^userUpvoted}}
-            {{^userDownvoted}}
-            <a class="vote-link" href="#" data-vote="up" data-id="{{_id}}">up</a>
-            {{/userDownvoted}}
-          {{/userUpvoted}}
-          {{#userUpvoted}}
-          <span class="vote">up</span> <a class="vote-link" href="#" data-vote="up/remove" data-id="{{_id}}">(remove)</a>
-          {{/userUpvoted}}
-          {{^userDownvoted}}
-            {{^userUpvoted}}
-            <a class="vote-link" href="#" data-vote="down" data-id="{{_id}}">down</a>
-            {{/userUpvoted}}
-          {{/userDownvoted}}
-          {{#userDownvoted}}
-          <span class="vote">down</span> <a class="vote-link" href="#" data-vote="down/remove" data-id="{{_id}}">(remove)</a>
-          {{/userDownvoted}}
-        </span>
+          {{> votePartial}}
         {{/isLoggedIn}}
       </section>
     </li>

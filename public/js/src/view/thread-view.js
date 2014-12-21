@@ -81,6 +81,9 @@ module.exports = class ThreadView {
     } else if (/back-link/.test(event.target.className)) {
       event.preventDefault();
       this.router.back();
+    } else if (/vote-link/.test(event.target.className)) {
+      event.preventDefault();
+      this.vote(event.target.dataset);
     }
   }
 
@@ -94,10 +97,20 @@ module.exports = class ThreadView {
     }, this.createReplyCallback.bind(this));
   }
 
+  vote (data) {
+    this.requests.vote(data.id, data.vote, this.handleVoteResponse.bind(this));
+  }
+
+  handleVoteResponse (response) {
+    this.model.updateItem(response.data);
+    this.router.replaceState(this.model.getData(), this.url);
+    this.render();
+  }
+
   createReplyCallback (response) {
     this.model.insert(response.data);
     this.router.replaceState(this.model.getData(), this.url);
-    this.render(response.loggedIn);
+    this.render();
   }
 
   render () {
@@ -108,14 +121,14 @@ module.exports = class ThreadView {
 
   generateThreadHTML (item, isLoggedIn) {
     if (!item.children) {
-      return this.templates.thread.render({ item, isLoggedIn });
+      return this.templates.thread.render({ item, isLoggedIn }, { votePartial : this.templates.votePartial });
     }
 
     return this.templates.thread.render({
       item,
       isLoggedIn,
       nested : item.children.reduce((str, current) => str + this.generateThreadHTML(current, isLoggedIn), '')
-    });
+    }, { votePartial : this.templates.votePartial });
   }
 
   appendReplyForm (linkElement, element, replyTo) {

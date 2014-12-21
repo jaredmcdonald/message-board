@@ -64,7 +64,7 @@ module.exports = class IndexView {
     this.el.innerHTML = this.templates.index.render({
       isLoggedIn : data.loggedIn,
       items: data.data
-    });
+    }, { votePartial : this.templates.votePartial });
   }
 
   clickListener (event) {
