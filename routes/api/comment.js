@@ -1,3 +1,5 @@
+require('array.prototype.find');
+
 var express = require('express');
 var router = express.Router();
 var utils = require('../../modules/http-utils');
@@ -56,7 +58,7 @@ module.exports = function (models) {
 
   // GET a specific thread.
   router.get('/:id/thread', function (req, res) {
-    getCommentThread(req.params.id, models, sendThreadData.bind(null, req, res))
+    getCommentThread(req.params.id, models, session.getUserId(req), sendThreadData.bind(null, req, res))
   });
 
   // DELETE a specific comment.
@@ -89,7 +91,13 @@ module.exports = function (models) {
 function sendTopLevelThreads (req, res, err, comments) {
   if (err) return utils.internalServerError(res);
 
-  utils.ok(res, comments, { loggedIn : session.isLoggedIn(req) });
+  var isLoggedIn = session.isLoggedIn(req);
+
+  if (isLoggedIn) {
+    comments = comments.map(addUserVoted.bind(null, session.getUserId(req), true));
+  }
+
+  utils.ok(res, comments, { loggedIn : isLoggedIn });
 }
 
 function sendThreadData (req, res, err, thread) {
@@ -109,17 +117,17 @@ function getIndexData (CommentModel, callback) {
 }
 
 // DB query for comment thread
-function getCommentThread (id, models, callback) {
+function getCommentThread (id, models, userId, callback) {
   // TODO remove '__v' and '_w'
   models.comment.GetArrayTree({ _id : id }, function (err, thread) {
     if (err) return callback (err, null);
 
-    populateAuthors(thread[0], models, callback); // index 0 because we don't need the
-                                                  // array wrapper with just one element
+    populateThread(thread[0], models, userId, callback); // index 0 because we don't need the
+                                                         // array wrapper with just one element
   });
 }
 
-function populateAuthors (thread, models, callback) {
+function populateThread (thread, models, userId, callback) {
   var authors = getAuthors(thread);
 
   models.user.find({
@@ -129,7 +137,7 @@ function populateAuthors (thread, models, callback) {
   }, 'username _id').exec(function (err, authors) {
     if (err) return callback(err, null);
 
-    callback(null, matchAuthor(thread, arrayToMap(authors)));
+    callback(null, walkThread(thread, arrayToMap(authors), userId));
   })
 }
 
@@ -141,16 +149,36 @@ function arrayToMap (arr) {
   return map;
 }
 
-function matchAuthor (thread, map) {
+function walkThread (thread, map, userId) {
+  if (userId) {
+    thread = addUserVoted(userId, false, thread);
+  }
+
   thread._author = map[thread._author];
 
   if (thread.children) {
     thread.children.forEach(function (child) {
-      matchAuthor(child, map);
+      walkThread(child, map);
     });
   }
 
   return thread;
+}
+
+// `convert`: whether or not to convert from `Mongoose.Collection`
+// (i.e., whether to call `toObject` on `comment`)
+function addUserVoted (userId, convert, comment) {
+  var match = matchId.bind(null, userId);
+  if (convert) {
+    comment = comment.toObject();
+  }
+  comment.userUpvoted = !!comment.upvotes.find(match);
+  comment.userDownvoted = comment.userUpvoted ? false : !!comment.downvotes.find(match);
+  return comment;
+}
+
+function matchId (userId, id) {
+  return id.toString() === userId;
 }
 
 // Given an ArrayTree, return an array of
@@ -172,7 +200,6 @@ function getAuthors (item, arr) {
 }
 
 function newVote (userId, commentId, isUpvote, CommentModel, callback) {
-
   CommentModel.findOne({
     _id  : commentId,
     $nor : [
