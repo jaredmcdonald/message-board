@@ -1,4 +1,5 @@
 require('array.prototype.find');
+require('array.prototype.findindex');
 
 var express = require('express');
 var router = express.Router();
@@ -36,24 +37,28 @@ module.exports = function (models) {
   router.post('/:id/up', function (req, res) {
     if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
 
-    newVote(session.getUserId(req), req.params.id, true, models.comment, function (err, updatedComment) {
-      if (err) return utils.internalServerError(res);
-      if (!updatedComment) return utils.notAuthorized(res, 'can only vote once per comment');
+    newVote(session.getUserId(req), req.params.id, true, models.comment, voteResponseHandler.bind(null, res, false));
+  });
 
-      utils.ok(res, updatedComment);
-    });
+  // POST to remove upvote on comment.
+  router.post('/:id/up/remove', function (req, res) {
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+
+    removeVote(session.getUserId(req), req.params.id, true, models.comment, voteResponseHandler.bind(null, res, true));
   });
 
   // POST to downvote a comment.
   router.post('/:id/down', function (req, res) {
     if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
 
-    newVote(session.getUserId(req), req.params.id, false, models.comment, function (err, updatedComment) {
-      if (err) return utils.internalServerError(res);
-      if (!updatedComment) return utils.notAuthorized(res, 'can only vote once per comment');
+    newVote(session.getUserId(req), req.params.id, false, models.comment, voteResponseHandler.bind(null, res, false));
+  });
 
-      utils.ok(res, updatedComment);
-    });
+  // POST to remove downvote on comment.
+  router.post('/:id/down/remove', function (req, res) {
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+
+    removeVote(session.getUserId(req), req.params.id, false, models.comment, voteResponseHandler.bind(null, res, true));
   });
 
   // GET a specific thread.
@@ -197,6 +202,45 @@ function getAuthors (item, arr) {
   }
 
   return arr;
+}
+
+function voteResponseHandler (res, isRemoval, err, updatedComment) {
+  if (err) return utils.internalServerError(res);
+  if (!updatedComment) return utils.notAuthorized(res, isRemoval ?
+    'no vote to remove' : 'can only vote once per comment');
+
+  utils.ok(res, updatedComment);
+}
+
+function removeVote (userId, commentId, isUpvote, CommentModel, callback) {
+  var queryObj = {
+    _id  : commentId
+  },
+  type = isUpvote ? 'upvotes' : 'downvotes';
+
+  queryObj[type] = {
+    $in : [ userId ]
+  };
+
+  CommentModel.findOne(queryObj, function (err, comment) {
+    if (err) return callback(err, null);
+
+    if (!comment) return callback(null, null);
+
+    var index = comment.toObject()[type].findIndex(function (id) {
+      return id.toString() === userId;
+    });
+
+    if (index === -1) return callback(null, null);
+
+    comment[type].splice(index, 1);
+
+    comment.save(function (err, savedComment) {
+      if (err) return callback(err, null);
+      savedComment.populate('_author', callback);
+    });
+
+  });
 }
 
 function newVote (userId, commentId, isUpvote, CommentModel, callback) {
