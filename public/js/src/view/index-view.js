@@ -86,6 +86,7 @@ module.exports = class IndexView {
 
   handleVoteResponse (response) {
     this.model.updateComment(response.data);
+    this.router.replaceState(this.model.getData(), this.url);
     this.render();
   }
 
