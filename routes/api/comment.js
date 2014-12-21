@@ -33,32 +33,22 @@ module.exports = function (models) {
     });
   });
 
-  // POST to upvote a comment.
-  router.post('/:id/up', function (req, res) {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+  ['up', 'down'].forEach(function (upOrDown) {
+    // POST to upvote or downvote a comment
+    router.post('/:id/' + upOrDown, function (req, res) {
+      if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
 
-    newVote(session.getUserId(req), req.params.id, true, models.comment, voteResponseHandler.bind(null, res, false));
-  });
+      newVote(session.getUserId(req), req.params.id, upOrDown === 'up', models.comment,
+        voteResponseHandler.bind(null, session.getUserId(req), res, false));
+    });
 
-  // POST to remove upvote on comment.
-  router.post('/:id/up/remove', function (req, res) {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+    // POST to remove a previous vote
+    router.post('/:id/' + upOrDown + '/remove', function (req, res) {
+      if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
 
-    removeVote(session.getUserId(req), req.params.id, true, models.comment, voteResponseHandler.bind(null, res, true));
-  });
-
-  // POST to downvote a comment.
-  router.post('/:id/down', function (req, res) {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
-
-    newVote(session.getUserId(req), req.params.id, false, models.comment, voteResponseHandler.bind(null, res, false));
-  });
-
-  // POST to remove downvote on comment.
-  router.post('/:id/down/remove', function (req, res) {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
-
-    removeVote(session.getUserId(req), req.params.id, false, models.comment, voteResponseHandler.bind(null, res, true));
+      removeVote(session.getUserId(req), req.params.id, upOrDown === 'up', models.comment,
+        voteResponseHandler.bind(null, session.getUserId(req), res, true));
+    });
   });
 
   // GET a specific thread.
@@ -204,12 +194,12 @@ function getAuthors (item, arr) {
   return arr;
 }
 
-function voteResponseHandler (res, isRemoval, err, updatedComment) {
+function voteResponseHandler (userId, res, isRemoval, err, updatedComment) {
   if (err) return utils.internalServerError(res);
   if (!updatedComment) return utils.notAuthorized(res, isRemoval ?
     'no vote to remove' : 'can only vote once per comment');
 
-  utils.ok(res, updatedComment);
+  utils.ok(res, addUserVoted(userId, true, updatedComment));
 }
 
 function removeVote (userId, commentId, isUpvote, CommentModel, callback) {
