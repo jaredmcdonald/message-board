@@ -8,7 +8,7 @@ ARROW="===>"
 
 # commands to be echoed and executed
 GULP_COMMAND="nohup gulp watch"
-SERVER_COMMAND="nohup supervisor -i public,gulpfile.js bin/www"
+SERVER_COMMAND="nohup supervisor -w dist bin/www"
 TAIL_COMMAND="tail -f $SERVER_LOG $GULP_LOG"
 
 # ensure logs exist
@@ -31,19 +31,15 @@ if ! hash gulp 2>/dev/null; then
   exit 1
 fi
 
-# export a fake cookie secret
-# (development only)
-# export SECRET="abc123"
+echo $NEWLINE
+echo "Watching source files for changes and sending output to $GULP_LOG..."
+echo "$ARROW $GULP_COMMAND > $GULP_LOG &"
+$GULP_COMMAND > $GULP_LOG &
 
 echo $NEWLINE
 echo "Starting server with supervisor and sending output to $SERVER_LOG..."
 echo "$ARROW $SERVER_COMMAND > $SERVER_LOG &"
 $SERVER_COMMAND > $SERVER_LOG &
-
-echo $NEWLINE
-echo "Watching public source files for changes and sending output to $GULP_LOG..."
-echo "$ARROW $GULP_COMMAND > $GULP_LOG &"
-$GULP_COMMAND > $GULP_LOG &
 
 echo $NEWLINE
 echo "Tailing $SERVER_LOG and $GULP_LOG..."

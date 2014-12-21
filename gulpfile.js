@@ -2,7 +2,8 @@ var gulp = require('gulp')
 ,   source = require('vinyl-source-stream')
 ,   browserify = require('browserify')
 ,   mold = require('mold-source-map')
-,   es6ify = require('es6ify')
+,   es6ify = require('es6ify')        // client
+,   traceur = require('gulp-traceur') // server - TODO: reconcile these two into one dependency
 ,   sass = require('gulp-sass')
 ,   sourcemaps = require('gulp-sourcemaps')
 ,   hogan = require('gulp-hogan-compile')
@@ -13,6 +14,8 @@ const JS_SRC = './public/js/src'
 ,     CSS_DIST = './public/css'
 ,     TEMPLATE_SRC = './public/templates/src'
 ,     TEMPLATE_DIST = './public/templates/dist'
+,     SERVER_SRC = './src/**/*.js'
+,     SERVER_DIST = './dist'
 
 gulp.task('templates', function () {
    gulp.src(TEMPLATE_SRC + '/**/*.html')
@@ -44,6 +47,17 @@ gulp.task('js', function () {
     .pipe(gulp.dest(JS_DIST))
 })
 
+// compile server-side JS into ES5
+gulp.task('compile', function () {
+  gulp.src(SERVER_SRC)
+      .pipe(traceur({ debug: true}))
+      .pipe(gulp.dest(SERVER_DIST))
+})
+
+gulp.task('watch-server', function () {
+  gulp.watch(SERVER_SRC, [ 'compile' ])
+})
+
 gulp.task('watch-css', function () {
   gulp.watch(CSS_SRC + '/*.scss', [ 'css' ])
 })
@@ -56,6 +70,6 @@ gulp.task('watch-templates', function () {
   gulp.watch(TEMPLATE_SRC + '/**/*.html', [ 'templates' ])
 })
 
-gulp.task('default', [ 'js', 'css', 'templates' ])
+gulp.task('default', [ 'compile', 'js', 'css', 'templates' ])
 
-gulp.task('watch', [ 'default', 'watch-js', 'watch-css', 'watch-templates' ])
+gulp.task('watch', [ 'default', 'watch-server', 'watch-js', 'watch-css', 'watch-templates' ])

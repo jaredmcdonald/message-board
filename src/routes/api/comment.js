@@ -1,6 +1,3 @@
-require('array.prototype.find');
-require('array.prototype.findindex');
-
 var express = require('express');
 var router = express.Router();
 var utils = require('../../modules/http-utils');
