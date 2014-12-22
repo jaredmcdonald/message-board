@@ -2,12 +2,12 @@ let router = require('express').Router()
 ,   utils = require('../../modules/http-utils')
 ,   session = require('../../modules/session');
 
-module.exports = function (models) {
+module.exports = models => {
 
   // GET all comments.
   // todo: add filter and pagination query params
-  router.get('/', function (req, res) {
-    models.comment.find({}, '-__v -_w').exec(function (err, comments) {
+  router.get('/', (req, res) => {
+    models.comment.find({}, '-__v -_w').exec((err, comments) => {
       if (err) return utils.internalServerError(res);
 
       utils.ok(res, comments, { loggedIn : session.isLoggedIn(req) });
@@ -15,13 +15,13 @@ module.exports = function (models) {
   });
 
   // GET the top 20 parentless (top-level) comments.
-  router.get('/root', function(req, res) {
+  router.get('/root', (req, res) => {
     getIndexData(models.comment, sendTopLevelThreads.bind(null, req, res));
   });
 
   // GET a specific comment.
-  router.get('/:id', function (req, res) {
-    models.comment.findById(req.params.id, '-__v -_w').exec(function (err, comment) {
+  router.get('/:id', (req, res) => {
+    models.comment.findById(req.params.id, '-__v -_w').exec((err, comment) => {
       if (err) return utils.internalServerError(res);
       if (!comment) return utils.notFound(res);
 
@@ -31,7 +31,7 @@ module.exports = function (models) {
 
   for (let upOrDown of ['up', 'down']) {
     // POST to upvote or downvote a comment
-    router.post(`/:id/${upOrDown}`, function (req, res) {
+    router.post(`/:id/${upOrDown}`, (req, res) => {
       if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
 
       newVote(session.getUserId(req), req.params.id, upOrDown === 'up', models.comment,
@@ -39,7 +39,7 @@ module.exports = function (models) {
     });
 
     // POST to remove a previous vote
-    router.post(`/:id/${upOrDown}/remove`, function (req, res) {
+    router.post(`/:id/${upOrDown}/remove`, (req, res) => {
       if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
 
       removeVote(session.getUserId(req), req.params.id, upOrDown === 'up', models.comment,
@@ -52,8 +52,8 @@ module.exports = function (models) {
     getCommentThread(req.params.id, models, session.getUserId(req), sendThreadData.bind(null, req, res)));
 
   // DELETE a specific comment.
-  router.delete('/:id', function (req, res) {
-    models.comment.findByIdAndUpdate(req.params.id, { deleted : true }).exec(function (err, comment) {
+  router.delete('/:id', (req, res) => {
+    models.comment.findByIdAndUpdate(req.params.id, { deleted : true }).exec((err, comment) => {
       if (err) return utils.internalServerError(res);
       if (!comment) return utils.notFound(res);
 
@@ -62,13 +62,13 @@ module.exports = function (models) {
   });
 
   // POST a new comment.
-  router.post('/', function (req, res) {
+  router.post('/', (req, res) => {
     if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
 
     let comment = req.body;
     comment._author = session.getUserId(req);
 
-    postNewComment(models, comment, function (err, newComment) {
+    postNewComment(models, comment, (err, newComment) => {
       if (err) return utils.internalServerError(res);
 
       utils.created(res, newComment, { loggedIn : session.isLoggedIn(req) });
@@ -109,7 +109,7 @@ function getIndexData (CommentModel, callback) {
 // DB query for comment thread
 function getCommentThread (id, models, userId, callback) {
   // TODO remove '__v' and '_w'
-  models.comment.GetArrayTree({ _id : id }, function (err, thread) {
+  models.comment.GetArrayTree({ _id : id }, (err, thread) => {
     if (err) return callback (err, null);
 
     populateThread(thread[0], models, userId, callback); // index 0 because we don't need the
@@ -130,7 +130,7 @@ function populateThread (thread, models, userId, callback) {
 
 function arrayToMap (arr) {
   let map = {};
-  arr.forEach(item => { map[item._id] = item; });
+  arr.forEach(item => map[item._id] = item);
   return map;
 }
 
@@ -197,7 +197,7 @@ function removeVote (userId, commentId, isUpvote, CommentModel, callback) {
     $in : [ userId ]
   };
 
-  CommentModel.findOne(queryObj, function (err, comment) {
+  CommentModel.findOne(queryObj, (err, comment) => {
     if (err) return callback(err, null);
     if (!comment) return callback(null, null);
 
@@ -206,7 +206,7 @@ function removeVote (userId, commentId, isUpvote, CommentModel, callback) {
 
     comment[type].splice(index, 1);
 
-    comment.save(function (err, savedComment) {
+    comment.save((err, savedComment) => {
       if (err) return callback(err, null);
       savedComment.populate('_author', callback);
     });

@@ -15,6 +15,8 @@ module.exports = function (mongoose, materializedPlugin) {
   // (w/ this mongoose implementation: https://www.npmjs.org/package/mongoose-materialized)
   commentSchema.plugin(materializedPlugin);
 
+  // leave this as standard (non-arrow) function
+  // to preserve dynamic `this` binding
   commentSchema.pre('save', function (next) {
     if (!this.created) {
       this.created = Date.now();

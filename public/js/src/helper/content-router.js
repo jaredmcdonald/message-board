@@ -1,7 +1,7 @@
 module.exports = class ContentRouter {
 
   constructor () {
-    const noop = function () {},
+    const noop = () => {},
     regexes = {
       thread : /^#\/comment\/([a-f0-9]{24})$/,
       submit : /^#\/submit(?:\/)?$/

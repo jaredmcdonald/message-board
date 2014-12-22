@@ -1,4 +1,4 @@
-module.exports = function (Request) {
+module.exports = Request => {
 
   let basePath = '/api/v1/comment';
 

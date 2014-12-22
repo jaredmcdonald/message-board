@@ -16,9 +16,7 @@ function respond (res, status, data) {
 
 function addData (obj, data) {
   if (typeof data === 'object') {
-    for (let key of Object.keys(data)) {
-      obj[key] = data[key];
-    };
+    Object.keys(data).forEach(key => obj[key] = data[key]);
   }
   return obj;
 }

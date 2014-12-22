@@ -3,16 +3,16 @@ let router = require('express').Router()
 ,   utils = require('../../modules/http-utils')
 ,   session = require('../../modules/session');
 
-module.exports = function (models) {
+module.exports = models => {
   // POST to create a new user
   router.post('/', (req, res) => saveUser(models.user, req.body, res));
 
   // POST to log in
-  router.post('/login', function (req, res) {
+  router.post('/login', (req, res) => {
     models.user.findOne({
       username: req.body.username,
       pwHash: hashPassword(req.body.password)
-    }).exec(function (err, user) {
+    }).exec((err, user) => {
       if (err) return utils.internalServerError(res);
       if (!user) return utils.notAuthorized(res, 'auth failed');
 
@@ -24,7 +24,7 @@ module.exports = function (models) {
     });
   });
 
-  router.post('/logout', function (req, res) {
+  router.post('/logout', (req, res) => {
     if (!session.isLoggedIn(req)) {
       return utils.notAuthorized(res, 'not logged in');
     }
@@ -34,23 +34,23 @@ module.exports = function (models) {
   });
 
   // Return user details if user is logged in
-  router.get('/login', function (req, res) {
+  router.get('/login', (req, res) => {
     utils.ok(res, {
       loggedIn: session.isLoggedIn(req),
       username: session.getUsername(req)
     });
   });
 
-  router.get('/', function (req, res) {
-    models.user.find({}, '-pwHash -__v').exec(function (err, users) {
+  router.get('/', (req, res) => {
+    models.user.find({}, '-pwHash -__v').exec((err, users) => {
       if (err) return utils.internalServerError(res);
 
       utils.ok(res, users);
     });
   });
 
-  router.get('/:id', function (req, res) {
-    models.user.findById(req.params.id, '-pwHash -__v').exec(function (err, user) {
+  router.get('/:id', (req, res) => {
+    models.user.findById(req.params.id, '-pwHash -__v').exec((err, user) => {
       if (err) return utils.internalServerError(res);
       if (!user) return utils.notFound(res);
 
@@ -58,8 +58,8 @@ module.exports = function (models) {
     });
   });
 
-  router.delete('/:id', function (req, res) {
-    models.user.findByIdAndRemove(req.params.id).exec(function (err, user) {
+  router.delete('/:id', (req, res) => {
+    models.user.findByIdAndRemove(req.params.id).exec((err, user) => {
       if (err) return utils.internalServerError(res);
       if (!user) return utils.notFound(res);
 
@@ -78,7 +78,7 @@ function saveUser (UserModel, user, res) {
   user.pwHash = hashPassword(user.password);
   delete user.password;
 
-  new UserModel(user).save(function (err, newUser) {
+  new UserModel(user).save((err, newUser) => {
     if (err) return utils.internalServerError(res);
 
     utils.created(res, {
