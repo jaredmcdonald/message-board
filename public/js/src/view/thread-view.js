@@ -114,9 +114,8 @@ module.exports = class ThreadView {
   }
 
   render () {
-    let back = this.templates.back.render()
-    ,   data = this.model.getData();
-    this.el.innerHTML = back + this.generateThreadHTML.bind(this)(data.data, data.loggedIn)
+    let data = this.model.getData();
+    this.el.innerHTML = this.templates.back.render() + this.generateThreadHTML.bind(this)(data.data, data.loggedIn)
   }
 
   generateThreadHTML (item, isLoggedIn) {

@@ -25,8 +25,9 @@ module.exports = class ThreadModel {
     if (item.path !== '') {
       let path = item.path.split(',');
       path.splice(0, 2);
+
       let parent = this.walkTree(path, this.getData().data)
-      ,   index = parent.children.findIndex((child) => child._id === item._id)
+      ,   index = parent.children.findIndex(child => child._id === item._id)
       ,   _children = parent.children[index].children;
       parent.children[index] = item;
       parent.children[index].children = _children;
@@ -53,8 +54,7 @@ module.exports = class ThreadModel {
       return item;
     }
 
-    let branch = item.children.find((child) => child._id === path[0]);
-
+    let branch = item.children.find(child => child._id === path[0]);
     path.shift();
 
     return this.walkTree(path, branch);

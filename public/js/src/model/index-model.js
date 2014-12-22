@@ -12,7 +12,7 @@ module.exports = class IndexModel {
   }
 
   updateComment (comment, sortAfterUpdate = true) {
-    let target = this.getData().data.findIndex((c) => comment._id === c._id);
+    let target = this.getData().data.findIndex(c => comment._id === c._id);
     if (target === -1) return false;
     this.data.data[target] = comment;
     sortAfterUpdate && this.sort();

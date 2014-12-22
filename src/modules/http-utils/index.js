@@ -16,9 +16,9 @@ function respond (res, status, data) {
 
 function addData (obj, data) {
   if (typeof data === 'object') {
-    Object.keys(data).forEach(function (key) {
+    for (let key of Object.keys(data)) {
       obj[key] = data[key];
-    });
+    };
   }
   return obj;
 }
@@ -29,13 +29,13 @@ function addData (obj, data) {
  */
 
 // 200 OK
-exports.ok = (res, data, metadata) => respond(res, 200, addData({ data : data }, metadata));
+exports.ok = (res, data, metadata) => respond(res, 200, addData({ data }, metadata));
 
 // 201 Created
-exports.created = (res, data, metadata) => respond(res, 201, addData({ data : data }, metadata));
+exports.created = (res, data, metadata) => respond(res, 201, addData({ data }, metadata));
 
 // 204 No Content
-exports.noContent = (res) => respond(res, 204);
+exports.noContent = res => respond(res, 204);
 
 // 400 Bad Request
 exports.badRequest = (res, msg) => respond(res, 400, { error : msg || 'bad request' });

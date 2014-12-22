@@ -20,14 +20,14 @@ module.exports = class EventRegistry {
   trigger (name, data) {
     if (!this.registered[name] || !this.registered[name].length) return false;
 
-    this.registered[name].forEach((obj) => typeof obj.handler === 'function' && obj.handler(data));
+    this.registered[name].forEach(obj => typeof obj.handler === 'function' && obj.handler(data));
   }
 
   // Remove the event handler `namespace` for event `name`
   remove (name, namespace) {
     if (!this.registered[name]) return false;
 
-    let index = this.registered[name].findIndex((obj) => obj.namespace === namespace);
+    let index = this.registered[name].findIndex(obj => obj.namespace === namespace);
     if (index > 0) return false;
 
     this.registered[name].splice(index, 1);

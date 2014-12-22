@@ -29,7 +29,7 @@ module.exports = function (models) {
     });
   });
 
-  ['up', 'down'].forEach(function (upOrDown) {
+  for (let upOrDown of ['up', 'down']) {
     // POST to upvote or downvote a comment
     router.post(`/:id/${upOrDown}`, function (req, res) {
       if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
@@ -45,7 +45,7 @@ module.exports = function (models) {
       removeVote(session.getUserId(req), req.params.id, upOrDown === 'up', models.comment,
         voteResponseHandler.bind(null, session.getUserId(req), res, true));
     });
-  });
+  };
 
   // GET a specific thread.
   router.get('/:id/thread', (req, res) =>
@@ -102,7 +102,6 @@ function sendThreadData (req, res, err, thread) {
 function getIndexData (CommentModel, callback) {
   CommentModel.find({ parentId : null }, '-__v -_w')
               .sort('-points')
-              .limit(20)
               .populate('_author')
               .exec(callback);
 }
@@ -131,9 +130,7 @@ function populateThread (thread, models, userId, callback) {
 
 function arrayToMap (arr) {
   let map = {};
-  arr.forEach(function (item) {
-    map[item._id] = item;
-  });
+  arr.forEach(item => { map[item._id] = item; });
   return map;
 }
 
@@ -145,9 +142,8 @@ function walkThread (thread, map, userId) {
   thread._author = map[thread._author];
 
   if (thread.children) {
-    thread.children.forEach(function (child) {
-      walkThread(child, map, userId);
-    });
+    thread.children.sort((a, b) => b.points - a.points);
+    thread.children.forEach(child => walkThread(child, map, userId));
   }
 
   return thread;
@@ -177,9 +173,7 @@ function getAuthors (item, arr = []) {
   }
 
   if (item.children) {
-    item.children.forEach(function (item) {
-      getAuthors(item, arr);
-    });
+    item.children.forEach(child => getAuthors(child, arr));
   }
 
   return arr;

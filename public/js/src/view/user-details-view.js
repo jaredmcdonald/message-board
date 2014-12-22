@@ -23,20 +23,18 @@ module.exports = class UserDetailsView {
   }
 
   setEvents () {
-    let self = this;
-
     // logout
-    this.el.addEventListener('click', function (event) {
+    this.el.addEventListener('click', event => {
       if (/logout/.test(event.target.className)) {
         event.preventDefault();
-        self.logout();
+        this.logout();
       }
     });
 
     // login
-    this.el.addEventListener('submit', function (event) {
+    this.el.addEventListener('submit', event => {
       event.preventDefault();
-      self.login({
+      this.login({
         username : event.target[0].value,
         password : event.target[1].value
       });

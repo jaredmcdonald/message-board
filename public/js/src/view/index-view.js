@@ -48,11 +48,6 @@ module.exports = class IndexView {
     this.render();
   }
 
-  voteHandler (data) {
-
-    this.render();
-  }
-
   handleResponse (data) {
     this.model.setData(data);
     this.router[this.isPageLoad ? 'replaceState' : 'pushState'](this.model.getData(), this.url);
