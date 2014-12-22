@@ -53,7 +53,7 @@ module.exports = class ThreadModel {
       return item;
     }
 
-    var branch = item.children.find((child) => child._id === path[0]);
+    let branch = item.children.find((child) => child._id === path[0]);
 
     path.shift();
 

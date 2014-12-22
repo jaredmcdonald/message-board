@@ -1,5 +1,5 @@
 module.exports = function (mongoose, materializedPlugin) {
-  var commentSchema = mongoose.Schema({
+  let commentSchema = mongoose.Schema({
     _author   : { type: mongoose.Schema.Types.ObjectId, ref: 'User', required : true },
     title     : { type: String, required : true },
     content   : { type: String, required : true },

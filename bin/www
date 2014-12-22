@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+require('traceur-runtime');
+
 var debug = require('debug')('message-board');
 var app = require('../dist/app');
 

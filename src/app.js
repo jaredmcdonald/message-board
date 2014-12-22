@@ -1,17 +1,17 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var materializedPlugin = require('mongoose-materialized');
-var models = require('./models')(mongoose, materializedPlugin);
-var apiRoutes = require('./routes/api')(models);
-var htmlRoutes = require('./routes/html');
+let express = require('express')
+,   path = require('path')
+,   favicon = require('serve-favicon')
+,   logger = require('morgan')
+,   cookieParser = require('cookie-parser')
+,   session = require('express-session')
+,   bodyParser = require('body-parser')
+,   mongoose = require('mongoose')
+,   materializedPlugin = require('mongoose-materialized')
+,   models = require('./models')(mongoose, materializedPlugin)
+,   apiRoutes = require('./routes/api')(models)
+,   htmlRoutes = require('./routes/html')
 
-var app = express();
+,   app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, '../views'));
@@ -34,16 +34,16 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use('/', htmlRoutes);
 
 // API
-var baseApiPath = '/api/v1';
-app.use(baseApiPath + '/comment', apiRoutes.comment);
-app.use(baseApiPath + '/user'   , apiRoutes.user);
+const baseApiPath = '/api/v1';
+app.use(`${baseApiPath}/comment`, apiRoutes.comment);
+app.use(`${baseApiPath}/user`   , apiRoutes.user);
 
 // DB
 mongoose.connect(process.env.MONGODB_HOST || 'localhost/messageboard');
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    var err = new Error('Not Found');
+    let err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
@@ -71,6 +71,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
 
 module.exports = app;

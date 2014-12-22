@@ -50,7 +50,7 @@ gulp.task('js', function () {
 // compile server-side JS into ES5
 gulp.task('compile', function () {
   gulp.src(SERVER_SRC)
-      .pipe(traceur({ debug: true}))
+      .pipe(traceur({ debug: true }))
       .pipe(gulp.dest(SERVER_DIST))
 })
 

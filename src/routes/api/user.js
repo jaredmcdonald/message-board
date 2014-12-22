@@ -1,14 +1,13 @@
-var express = require('express');
-var router = express.Router();
-var crypto = require('crypto');
-var utils = require('../../modules/http-utils');
-var session = require('../../modules/session');
+let router = require('express').Router()
+,   crypto = require('crypto')
+,   utils = require('../../modules/http-utils')
+,   session = require('../../modules/session');
 
 module.exports = function (models) {
-  router.post('/', function (req, res) {
-    saveUser(models.user, req.body, res);
-  });
+  // POST to create a new user
+  router.post('/', (req, res) => saveUser(models.user, req.body, res));
 
+  // POST to log in
   router.post('/login', function (req, res) {
     models.user.findOne({
       username: req.body.username,
@@ -91,7 +90,7 @@ function saveUser (UserModel, user, res) {
 
 // store passwords as md5 checksums
 function hashPassword (pw) {
-  var hash = crypto.createHash('md5');
+  let hash = crypto.createHash('md5');
   hash.write(pw);
   return hash.digest('hex');
 }

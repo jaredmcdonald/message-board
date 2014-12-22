@@ -1,7 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var utils = require('../../modules/http-utils');
-var session = require('../../modules/session');
+let router = require('express').Router()
+,   utils = require('../../modules/http-utils')
+,   session = require('../../modules/session');
 
 module.exports = function (models) {
 
@@ -32,7 +31,7 @@ module.exports = function (models) {
 
   ['up', 'down'].forEach(function (upOrDown) {
     // POST to upvote or downvote a comment
-    router.post('/:id/' + upOrDown, function (req, res) {
+    router.post(`/:id/${upOrDown}`, function (req, res) {
       if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
 
       newVote(session.getUserId(req), req.params.id, upOrDown === 'up', models.comment,
@@ -40,7 +39,7 @@ module.exports = function (models) {
     });
 
     // POST to remove a previous vote
-    router.post('/:id/' + upOrDown + '/remove', function (req, res) {
+    router.post(`/:id/${upOrDown}/remove`, function (req, res) {
       if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
 
       removeVote(session.getUserId(req), req.params.id, upOrDown === 'up', models.comment,
@@ -49,9 +48,8 @@ module.exports = function (models) {
   });
 
   // GET a specific thread.
-  router.get('/:id/thread', function (req, res) {
-    getCommentThread(req.params.id, models, session.getUserId(req), sendThreadData.bind(null, req, res))
-  });
+  router.get('/:id/thread', (req, res) =>
+    getCommentThread(req.params.id, models, session.getUserId(req), sendThreadData.bind(null, req, res)));
 
   // DELETE a specific comment.
   router.delete('/:id', function (req, res) {
@@ -67,7 +65,7 @@ module.exports = function (models) {
   router.post('/', function (req, res) {
     if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
 
-    var comment = req.body;
+    let comment = req.body;
     comment._author = session.getUserId(req);
 
     postNewComment(models, comment, function (err, newComment) {
@@ -75,6 +73,7 @@ module.exports = function (models) {
 
       utils.created(res, newComment, { loggedIn : session.isLoggedIn(req) });
     });
+
   });
 
   return router;
@@ -83,13 +82,13 @@ module.exports = function (models) {
 function sendTopLevelThreads (req, res, err, comments) {
   if (err) return utils.internalServerError(res);
 
-  var isLoggedIn = session.isLoggedIn(req);
+  let loggedIn = session.isLoggedIn(req);
 
-  if (isLoggedIn) {
+  if (loggedIn) {
     comments = comments.map(addUserVoted.bind(null, session.getUserId(req), true));
   }
 
-  utils.ok(res, comments, { loggedIn : isLoggedIn });
+  utils.ok(res, comments, { loggedIn });
 }
 
 function sendThreadData (req, res, err, thread) {
@@ -120,21 +119,18 @@ function getCommentThread (id, models, userId, callback) {
 }
 
 function populateThread (thread, models, userId, callback) {
-  var authors = getAuthors(thread);
+  let authors = getAuthors(thread);
 
   models.user.find({
     _id : {
       $in : authors
     }
-  }, 'username _id').exec(function (err, authors) {
-    if (err) return callback(err, null);
-
-    callback(null, walkThread(thread, arrayToMap(authors), userId));
-  })
+  }, 'username _id').exec((err, authors) =>
+    callback(err, walkThread(thread, arrayToMap(authors), userId)));
 }
 
 function arrayToMap (arr) {
-  var map = {};
+  let map = {};
   arr.forEach(function (item) {
     map[item._id] = item;
   });
@@ -160,7 +156,7 @@ function walkThread (thread, map, userId) {
 // `convert`: whether or not to convert from `Mongoose.Collection`
 // (i.e., whether to call `toObject` on `comment`)
 function addUserVoted (userId, convert, comment) {
-  var match = matchId.bind(null, userId);
+  let match = matchId.bind(null, userId);
   if (convert) {
     comment = comment.toObject();
   }
@@ -175,9 +171,7 @@ function matchId (userId, id) {
 
 // Given an ArrayTree, return an array of
 // `_author`s contained within it
-function getAuthors (item, arr) {
-  arr = arr || [];
-
+function getAuthors (item, arr = []) {
   if (arr.indexOf(item._author) === -1) {
     arr.push(item._author)
   }
@@ -200,7 +194,7 @@ function voteResponseHandler (userId, res, isRemoval, err, updatedComment) {
 }
 
 function removeVote (userId, commentId, isUpvote, CommentModel, callback) {
-  var queryObj = {
+  let queryObj = {
     _id  : commentId
   },
   type = isUpvote ? 'upvotes' : 'downvotes';
@@ -211,13 +205,9 @@ function removeVote (userId, commentId, isUpvote, CommentModel, callback) {
 
   CommentModel.findOne(queryObj, function (err, comment) {
     if (err) return callback(err, null);
-
     if (!comment) return callback(null, null);
 
-    var index = comment.toObject()[type].findIndex(function (id) {
-      return id.toString() === userId;
-    });
-
+    let index = comment.toObject()[type].findIndex((id) => id.toString() === userId);
     if (index === -1) return callback(null, null);
 
     comment[type].splice(index, 1);

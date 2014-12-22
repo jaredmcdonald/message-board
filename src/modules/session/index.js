@@ -14,6 +14,4 @@ exports.login = function (req, username, userId) {
   req.session.userId = userId;
 }
 
-exports.logout = function (req) {
-  req.session.destroy();
-}
+exports.logout = (req) => req.session.destroy();

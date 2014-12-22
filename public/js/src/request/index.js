@@ -8,7 +8,7 @@ module.exports = class Request {
   }
 
   handler (callback) {
-    var self = this;
+    let self = this;
     this.xhr.onload = function (event) {
       if (self.xhr.response) {
         callback(JSON.parse(self.xhr.response));
