@@ -229,7 +229,7 @@ function newVote (userId, commentId, isUpvote, CommentModel, callback) {
         }
       }
     ]
-  }, function (err, comment) {
+  }, (err, comment) => {
     if (err) return callback(err, null);
     if (!comment) return callback(null, null);
 
@@ -244,21 +244,9 @@ function newVote (userId, commentId, isUpvote, CommentModel, callback) {
 function postNewComment (models, comment, callback) {
   // todo: error check fields of POSTed comment
 
-  new models.comment(comment).save(function (err, newComment) {
+  new models.comment(comment).save((err, newComment) => {
     if (err) callback (err, null);
 
-    // Send HTTP response without waiting for association
-    // with user; do that work in the background (below)
     newComment.populate('_author', callback);
-
-    // Associate newly saved comment with its author
-    models.user.findByIdAndUpdate(newComment._author, {
-      $push : {
-        _comments : newComment._id
-      }
-    }).exec(function (err, user) {
-      console.log(err || 'successful association of comment ' + newComment._id + ' with user ' + user._id);
-    });
-
   });
 }
