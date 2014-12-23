@@ -3,6 +3,8 @@
  *
  */
 
+const codes = require('http').STATUS_CODES;
+
 function respond (res, status, data) {
   res.status(status);
 
@@ -36,16 +38,16 @@ exports.created = (res, data, metadata) => respond(res, 201, addData({ data }, m
 exports.noContent = res => respond(res, 204);
 
 // 400 Bad Request
-exports.badRequest = (res, msg) => respond(res, 400, { error : msg || 'bad request' });
+exports.badRequest = (res, error = codes[400]) => respond(res, 400, { error });
 
 // 401 Not Authorized
-exports.notAuthorized = (res, msg) => respond(res, 401, { error : msg || 'must be logged in to perform specified action' });
+exports.notAuthorized = (res, error = codes[401]) => respond(res, 401, { error });
 
 // 404 Not Found
-exports.notFound = (res, msg) => respond(res, 404, { error : msg || 'resource does not exist' });
+exports.notFound = (res, error = codes[404]) => respond(res, 404, { error });
 
 // 500 Internal Server Error
-exports.internalServerError = (res, msg) => respond(res, 500, { error : msg || 'error processing request' });
+exports.internalServerError = (res, error = codes[500]) => respond(res, 500, { error });
 
 // 501 Not Implemented
-exports.notImplemented = (res, msg) => respond(res, 501, { error : msg || 'request not implemented' });
+exports.notImplemented = (res, error = codes[501]) => respond(res, 501, { error });

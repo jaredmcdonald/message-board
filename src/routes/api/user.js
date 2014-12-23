@@ -17,6 +17,7 @@ module.exports = models => {
     }).exec((err, user) => {
       if (err) return utils.internalServerError(res);
       if (!user) return utils.notAuthorized(res, 'auth failed');
+
       session.login(req, user.username, user._id);
       utils.ok(res, {
         admin: user.admin,
@@ -28,7 +29,7 @@ module.exports = models => {
 
   // POST to log out
   router.post('/logout', (req, res) => {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'not logged in');
+    if (!session.isLoggedIn(req)) return utils.noContent(res);
     session.logout(req);
     utils.noContent(res);
   });

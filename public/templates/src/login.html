@@ -1,5 +1,5 @@
 {{#loggedIn}}
-  <p>Hi, {{username}}. <a href="#" class="logout">Log out</a></p>
+  <p>Hi, {{username}}. <a href="#" class="logout">Log out</a>{{#admin}} | <a class="admin" href="#">Admin</a>{{/admin}}</p>
 {{/loggedIn}}
 {{^loggedIn}}
   <form class="row">

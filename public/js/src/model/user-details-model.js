@@ -1,6 +1,7 @@
 let defaults = {
   authFailed : true,
-  loggedIn : false
+  loggedIn : false,
+  admin : false
 };
 
 module.exports = class UserDetailsModel {

@@ -4,14 +4,16 @@ module.exports = class ContentRouter {
     const noop = () => {},
     regexes = {
       thread : /^#\/comment\/([a-f0-9]{24})$/,
-      submit : /^#\/submit(?:\/)?$/
+      submit : /^#\/submit(?:\/)?$/,
+      admin  : /^#\/admin(?:\/)?$/
     };
 
     this.regexes = regexes;
     this.callbacks = {
       index  : noop,
       thread : noop,
-      submit : noop
+      submit : noop,
+      admin  : noop
     };
 
     this.initialized = false;
@@ -46,6 +48,10 @@ module.exports = class ContentRouter {
   route (event = { state : null }) {
     if (this.regexes.submit.test(window.location.hash)) {
       return this.callbacks.submit(!event.state);
+    }
+
+    if (this.regexes.admin.test(window.location.hash)) {
+      return this.callbacks.admin(event.state, !event.state);
     }
 
     let match = window.location.hash.match(this.regexes.thread);

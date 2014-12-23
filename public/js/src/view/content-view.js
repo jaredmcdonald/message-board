@@ -2,7 +2,8 @@ let contentRequestHelper = require('../helper/content-request-helper'),
     ContentRouter = require('../helper/content-router'),
     SubmitView = require('./submit-view'),
     IndexView = require('./index-view'),
-    ThreadView = require('./thread-view');
+    ThreadView = require('./thread-view'),
+    AdminView = require('./admin-view');
 
 module.exports = class ContentView {
   constructor (templates, Request, appEvents) {
@@ -27,6 +28,7 @@ module.exports = class ContentView {
     this.router.register('index', this.index.bind(this));
     this.router.register('thread', this.thread.bind(this));
     this.router.register('submit', this.submitForm.bind(this));
+    this.router.register('admin', this.admin.bind(this));
 
     this.el = document.querySelector('.content');
     this.createEventListeners();
@@ -35,6 +37,8 @@ module.exports = class ContentView {
   }
 
   createEventListeners () {
+    this.appEvents.listen('showAdmin', this.namespace, this.admin.bind(this));
+
     this.el.addEventListener(this.events.click,
       this.appEvents.trigger.bind(this.appEvents, this.events.click + this.namespace));
     this.el.addEventListener(this.events.submit,
@@ -54,6 +58,11 @@ module.exports = class ContentView {
   thread (id, data, isPageLoad = false) {
     this.destroyView();
     this.view = new ThreadView(id, this, data, isPageLoad);
+  }
+
+  admin (data, isPageLoad = false) {
+    this.destroyView();
+    this.view = new AdminView(this, data, isPageLoad);
   }
 
   destroyView () {

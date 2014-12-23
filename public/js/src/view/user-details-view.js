@@ -28,6 +28,9 @@ module.exports = class UserDetailsView {
       if (/logout/.test(event.target.className)) {
         event.preventDefault();
         this.logout();
+      } else if (/admin/.test(event.target.className)) {
+        event.preventDefault();
+        this.appEvents.trigger('showAdmin');
       }
     });
 

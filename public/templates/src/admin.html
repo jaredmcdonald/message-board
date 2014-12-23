@@ -1,0 +1,46 @@
+<h3>Existing Users</h3>
+
+{{#users}}
+  <form class="modify-user row" data-id="{{_id}}">
+    <div class="two columns">
+      <label>Username</label>
+      <input class="u-full-width" type="text" placeholder="Username" value="{{username}}">
+    </div>
+    <div class="three columns">
+      <label>Password</label>
+      <input class="u-full-width" type="password" placeholder="Change Password">
+    </div>
+    <div class="three columns">
+      <label>Bio</label>
+      <input class="u-full-width" type="text" placeholder="Bio" value="{{bio}}">
+    </div>
+    <div class="four columns">
+      <label>&nbsp;</label>
+      <input class="button-primary" type="submit" value="Update">
+      <button class="button-secondary delete-user u-pull-right" data-id="{{_id}}">Delete</button>
+    </div>
+  </form>
+{{/users}}
+
+<hr/>
+
+<h3>Create New User</h3>
+
+<form class="create-user row">
+  <div class="two columns">
+    <label>Username</label>
+    <input class="u-full-width" type="text" placeholder="Username">
+  </div>
+  <div class="three columns">
+    <label>Password</label>
+    <input class="u-full-width" type="password" placeholder="Password">
+  </div>
+  <div class="four columns">
+    <label>Bio</label>
+    <input class="u-full-width" type="text" placeholder="Bio">
+  </div>
+  <div class="three columns">
+    <label>&nbsp;</label>
+    <input class="button-primary" type="submit" value="Create">
+  </div>
+</form>
