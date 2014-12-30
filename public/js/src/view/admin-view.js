@@ -60,7 +60,8 @@ module.exports = class AdminView {
       event.preventDefault();
       let data = {
         username : event.target[0].value,
-        bio : event.target[2].value
+        bio : event.target[2].value,
+        admin : !!event.target[3].checked
       };
       if (event.target[1].value) {
         data.password = event.target[1].value;
@@ -71,7 +72,8 @@ module.exports = class AdminView {
       this.newUser({
         username : event.target[0].value,
         password : event.target[1].value,
-        bio : event.target[2].value
+        bio : event.target[2].value,
+        admin : !!event.target[3].checked
       });
     }
   }

@@ -1,23 +1,35 @@
 <h3>Existing Users</h3>
 
 {{#users}}
-  <form class="modify-user row" data-id="{{_id}}">
-    <div class="two columns">
-      <label>Username</label>
-      <input class="u-full-width" type="text" placeholder="Username" value="{{username}}">
+  <form class="modify-user" data-id="{{_id}}">
+    <div class="row">
+      <div class="two columns">
+        <label>Username</label>
+        <input class="u-full-width" type="text" placeholder="Username" value="{{username}}">
+      </div>
+      <div class="three columns">
+        <label>Password</label>
+        <input class="u-full-width" type="password" placeholder="Change Password">
+      </div>
+      <div class="four columns">
+        <label>Bio</label>
+        <input class="u-full-width" type="text" placeholder="Bio" value="{{bio}}">
+      </div>
+      <div class="three columns">
+        <label>Admin</label>
+        <label>
+          <input type="checkbox" {{#admin}}checked{{/admin}}>
+          <span class="label-body">Admin</span>
+        </label>
+      </div>
     </div>
-    <div class="three columns">
-      <label>Password</label>
-      <input class="u-full-width" type="password" placeholder="Change Password">
-    </div>
-    <div class="three columns">
-      <label>Bio</label>
-      <input class="u-full-width" type="text" placeholder="Bio" value="{{bio}}">
-    </div>
-    <div class="four columns">
-      <label>&nbsp;</label>
-      <input class="button-primary" type="submit" value="Update">
-      <button class="button-secondary delete-user u-pull-right" data-id="{{_id}}">Delete</button>
+    <div class="row">
+      <div class="two columns">
+        <input class="button-primary u-full-width" type="submit" value="Update">
+      </div>
+      <div class="two columns">
+        <button class="button-secondary delete-user u-full-width" data-id="{{_id}}">Delete</button>
+      </div>
     </div>
   </form>
 {{/users}}
@@ -26,21 +38,32 @@
 
 <h3>Create New User</h3>
 
-<form class="create-user row">
-  <div class="two columns">
-    <label>Username</label>
-    <input class="u-full-width" type="text" placeholder="Username">
+<form class="create-user">
+  <div class="row">
+    <div class="two columns">
+      <label>Username</label>
+      <input class="u-full-width" type="text" placeholder="Username">
+    </div>
+    <div class="three columns">
+      <label>Password</label>
+      <input class="u-full-width" type="password" placeholder="Password">
+    </div>
+    <div class="four columns">
+      <label>Bio</label>
+      <input class="u-full-width" type="text" placeholder="Bio">
+    </div>
+    <div class="three columns">
+      <label>Admin</label>
+      <label>
+        <input type="checkbox" {{#admin}}checked{{/admin}}>
+        <span class="label-body">Admin</span>
+      </label>
+    </div>
   </div>
-  <div class="three columns">
-    <label>Password</label>
-    <input class="u-full-width" type="password" placeholder="Password">
-  </div>
-  <div class="four columns">
-    <label>Bio</label>
-    <input class="u-full-width" type="text" placeholder="Bio">
-  </div>
-  <div class="three columns">
-    <label>&nbsp;</label>
-    <input class="button-primary" type="submit" value="Create">
+  <div class="row">
+    <div class="two columns">
+      <label>&nbsp;</label>
+      <input class="button-primary u-full-width" type="submit" value="Create">
+    </div>
   </div>
 </form>
