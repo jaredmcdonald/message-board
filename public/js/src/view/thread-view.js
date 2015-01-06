@@ -1,4 +1,9 @@
-let ThreadModel = require('../model/thread-model');
+let ThreadModel = require('../model/thread-model'),
+    marked = require('marked');
+
+marked.setOptions({
+  sanitize: true
+});
 
 module.exports = class ThreadView {
   constructor (id, parentView, data, isPageLoad) {
@@ -119,6 +124,7 @@ module.exports = class ThreadView {
   }
 
   generateThreadHTML (item, isLoggedIn) {
+    item.content = marked(item.content);
     if (!item.children) {
       return this.templates.thread.render({ item, isLoggedIn }, { votePartial : this.templates.votePartial });
     }
