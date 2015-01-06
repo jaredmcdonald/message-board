@@ -124,15 +124,18 @@ module.exports = class ThreadView {
   }
 
   generateThreadHTML (item, isLoggedIn) {
-    item.content = marked(item.content);
-    if (!item.children) {
-      return this.templates.thread.render({ item, isLoggedIn }, { votePartial : this.templates.votePartial });
+    // we don't want to mutate the model, so create a local copy
+    // which we can mutate (namely, converting `content` to markdown)
+    let clone = Object.create(item);
+    clone.content = marked(clone.content);
+    if (!clone.children) {
+      return this.templates.thread.render({ item : clone, isLoggedIn }, { votePartial : this.templates.votePartial });
     }
 
     return this.templates.thread.render({
-      item,
+      item : clone,
       isLoggedIn,
-      nested : item.children.reduce((str, current) => str + this.generateThreadHTML(current, isLoggedIn), '')
+      nested : clone.children.reduce((str, current) => str + this.generateThreadHTML(current, isLoggedIn), '')
     }, { votePartial : this.templates.votePartial });
   }
 
