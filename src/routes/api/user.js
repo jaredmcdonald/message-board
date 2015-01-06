@@ -120,10 +120,10 @@ function saveUser (UserModel, user, res) {
 
   new UserModel(hashUserPassword(user)).save((err, newUser) => {
     if (err) return utils.internalServerError(res);
-    newUser = newUser.toObject();
-    delete newUser.pwHash;
-    delete newUser.__v;
-    utils.created(res, newUser);
+    let user = newUser.toObject();
+    delete user.pwHash;
+    delete user.__v;
+    utils.created(res, user);
   });
 }
 
