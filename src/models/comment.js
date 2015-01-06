@@ -1,7 +1,7 @@
 module.exports = function (mongoose, materializedPlugin) {
   let commentSchema = mongoose.Schema({
     _author   : { type: mongoose.Schema.Types.ObjectId, ref: 'User', required : true },
-    title     : { type: String, required : true },
+    title     : { type: String }, // only required on root-level comment
     content   : { type: String, required : true },
     upvotes   : { type: [ mongoose.Schema.Types.ObjectId ], ref: 'User' },
     downvotes : { type: [ mongoose.Schema.Types.ObjectId ], ref: 'User' },

@@ -45,10 +45,12 @@ module.exports = class SubmitView {
 
   submitListener (event) {
     event.preventDefault();
-    this.requests.create({
-      title   : event.target[0].value,
-      content : event.target[1].value
-    }, this.handleResponse.bind(this));
+    let title = event.target[0].value.trim()
+    ,   content = event.target[1].value.trim();
+
+    if (!title || !content) return false; // todo: error messaging
+
+    this.requests.create({ title, content }, this.handleResponse.bind(this));
   }
 
   handleResponse (data) {

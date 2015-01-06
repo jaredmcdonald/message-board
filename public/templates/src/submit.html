@@ -1,5 +1,7 @@
 <form class="row" data-id="{{replyTo}}">
+  {{^isReply}}
   <input type="text" class="u-full-width" placeholder="Title">
+  {{/isReply}}
   <textarea class="u-full-width" placeholder="Lorem ipsum..."></textarea>
   <input class="button-primary" type="submit" value="Submit">
 </form>

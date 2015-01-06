@@ -94,10 +94,12 @@ module.exports = class ThreadView {
 
   submitListener (event) {
     event.preventDefault();
+    let content = event.target[0].value.trim();
+
+    if (!content) return false; // todo: error messaging
 
     this.requests.create({
-      title    : event.target[0].value,
-      content  : event.target[1].value,
+      content,
       parentId : event.target.dataset.id
     }, this.createReplyCallback.bind(this));
   }
@@ -120,28 +122,28 @@ module.exports = class ThreadView {
 
   render () {
     let data = this.model.getData();
-    this.el.innerHTML = this.templates.back.render() + this.generateThreadHTML.bind(this)(data.data, data.loggedIn)
+    this.el.innerHTML = this.templates.back.render() + this.generateThreadHTML.bind(this)(data.data, data.loggedIn);
   }
 
-  generateThreadHTML (item, isLoggedIn) {
+  generateThreadHTML (data, isLoggedIn) {
     // we don't want to mutate the model, so create a local copy
-    // which we can mutate (namely, converting `content` to markdown)
-    let clone = Object.create(item);
-    clone.content = marked(clone.content);
-    if (!clone.children) {
-      return this.templates.thread.render({ item : clone, isLoggedIn }, { votePartial : this.templates.votePartial });
+    // which we can mutate (namely, converting `content` from markdown)
+    let item = Object.create(data);
+    item.content = marked(item.content);
+    if (!item.children) {
+      return this.templates.thread.render({ item, isLoggedIn }, { votePartial : this.templates.votePartial });
     }
 
     return this.templates.thread.render({
-      item : clone,
+      item,
       isLoggedIn,
-      nested : clone.children.reduce((str, current) => str + this.generateThreadHTML(current, isLoggedIn), '')
+      nested : item.children.reduce((str, current) => str + this.generateThreadHTML(current, isLoggedIn), '')
     }, { votePartial : this.templates.votePartial });
   }
 
   appendReplyForm (linkElement, element, replyTo) {
-    linkElement.outerHTML = '';
-    element.innerHTML += this.templates.submit.render({ replyTo });
+    linkElement.outerHTML = '<span>Replying...</span>';
+    element.innerHTML += this.templates.submit.render({ replyTo, isReply : true });
   }
 
 }
