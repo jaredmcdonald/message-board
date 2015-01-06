@@ -7,7 +7,12 @@ const adminError = 'admin priveleges required';
 
 module.exports = models => {
   // POST to create a new user
-  router.post('/', (req, res) => saveUser(models.user, req.body, res));
+  router.post('/', (req, res) => {
+    isAdmin(models.user, session.getUserId(req), (err, admin) => {
+      if (!admin && req.body.admin) delete req.body.admin; // disallow non-admins creating admins
+      saveUser(models.user, req.body, res);
+    });
+  });
 
   // POST to log in
   router.post('/login', (req, res) => {
