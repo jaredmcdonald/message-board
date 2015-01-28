@@ -3,17 +3,19 @@ module.exports = class ContentRouter {
   constructor () {
     const noop = () => {},
     regexes = {
-      thread : /^#\/comment\/([a-f0-9]{24})$/,
-      submit : /^#\/submit(?:\/)?$/,
-      admin  : /^#\/admin(?:\/)?$/
+      thread   : /^#\/comment\/([a-f0-9]{24})$/,
+      submit   : /^#\/submit(?:\/)?$/,
+      register : /^#\/register(?:\/)?$/,
+      admin    : /^#\/admin(?:\/)?$/
     };
 
     this.regexes = regexes;
     this.callbacks = {
-      index  : noop,
-      thread : noop,
-      submit : noop,
-      admin  : noop
+      index    : noop,
+      thread   : noop,
+      submit   : noop,
+      admin    : noop,
+      register : noop
     };
 
     this.initialized = false;
@@ -34,8 +36,8 @@ module.exports = class ContentRouter {
   initialize () {
     if (this.initialized) return false;
 
-    window.addEventListener('popstate', this.route.bind(this));
-    this.route();
+    window.addEventListener('popstate', this.route.bind(this, true));
+    this.route(false);
 
     this.initialized = true;
     return this;
@@ -45,9 +47,13 @@ module.exports = class ContentRouter {
     this.callbacks[type] = callback;
   }
 
-  route (event = { state : null }) {
+  route (isPopState, event = { state : null }) {
     if (this.regexes.submit.test(window.location.hash)) {
       return this.callbacks.submit(!event.state);
+    }
+
+    if (this.regexes.register.test(window.location.hash)) {
+      return this.callbacks.register(!event.state, isPopState);
     }
 
     if (this.regexes.admin.test(window.location.hash)) {

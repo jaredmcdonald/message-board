@@ -3,7 +3,8 @@ let contentRequestHelper = require('../helper/content-request-helper'),
     SubmitView = require('./submit-view'),
     IndexView = require('./index-view'),
     ThreadView = require('./thread-view'),
-    AdminView = require('./admin-view');
+    AdminView = require('./admin-view'),
+    RegisterView = require('./register-view');
 
 module.exports = class ContentView {
   constructor (templates, Request, appEvents) {
@@ -28,6 +29,7 @@ module.exports = class ContentView {
     this.router.register('index', this.index.bind(this));
     this.router.register('thread', this.thread.bind(this));
     this.router.register('submit', this.submitForm.bind(this));
+    this.router.register('register', this.register.bind(this));
     this.router.register('admin', this.admin.bind(this));
 
     this.el = document.querySelector('.content');
@@ -38,6 +40,7 @@ module.exports = class ContentView {
 
   createEventListeners () {
     this.appEvents.listen('showAdmin', this.namespace, this.admin.bind(this));
+    this.appEvents.listen('register', this.namespace, this.register.bind(this));
 
     this.el.addEventListener(this.events.click,
       this.appEvents.trigger.bind(this.appEvents, this.events.click + this.namespace));
@@ -58,6 +61,11 @@ module.exports = class ContentView {
   thread (id, data, isPageLoad = false) {
     this.destroyView();
     this.view = new ThreadView(id, this, data, isPageLoad);
+  }
+
+  register (isPageLoad = false, isFromPopState = false) {
+    this.destroyView();
+    this.view = new RegisterView(this, isPageLoad, isFromPopState);
   }
 
   admin (data, isPageLoad = false) {

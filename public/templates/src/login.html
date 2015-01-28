@@ -2,18 +2,24 @@
   <p>Hi, {{username}}. <a href="#" class="logout">Log out</a>{{#admin}} | <a class="admin" href="#">Admin</a>{{/admin}}</p>
 {{/loggedIn}}
 {{^loggedIn}}
-  <form class="row">
+  <div class="row">
+    <form>
+      <div class="three columns">
+        <input class="u-full-width" type="text" placeholder="Username">
+      </div>
+      <div class="three columns">
+        <input class="u-full-width" type="password" placeholder="Password">
+      </div>
+      <div class="three columns">
+        <input class="button-primary u-full-width" type="submit" value="Log In">
+      </div>
+    </form>
     <div class="three columns">
-      <input class="u-full-width" type="text" placeholder="Username">
+      <button class="button-secondary u-full-width register">Register</button>
     </div>
-    <div class="three columns">
-      <input class="u-full-width" type="password" placeholder="Password">
-    </div>
-    <div class="six columns">
-      <input class="button-primary" type="submit" value="Log In">
-    </div>
-  </form>
+  </div>
 {{/loggedIn}}
 {{#authFailed}}
   <p class="error">Authentication failed.</p>
 {{/authFailed}}
+<hr>
