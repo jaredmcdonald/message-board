@@ -1,7 +1,8 @@
 module.exports = class SubmitView {
-  constructor (parentView, isPageLoad) {
+  constructor (parentView, isPageLoad = false, isFromPopState = false) {
     this.parentView = parentView;
     this.isPageLoad = isPageLoad;
+    this.isFromPopState = isFromPopState;
     this.el = parentView.el;
     this.templates = parentView.templates;
     this.appEvents = parentView.appEvents;
@@ -26,7 +27,13 @@ module.exports = class SubmitView {
 
   initialize () {
     this.bindEvents();
-    this.router[this.isPageLoad ? 'replaceState' : 'pushState'](true, this.url);
+
+    if (this.isPageLoad) {
+      this.router.replaceState(true, this.url);
+    } else if (!this.isFromPopState) {
+      this.router.pushState(true, this.url);
+    } // else: the view is already in history so do nothing
+
     this.render();
   }
 

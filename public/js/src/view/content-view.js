@@ -53,9 +53,9 @@ module.exports = class ContentView {
     this.view = new IndexView(this, data, isPageLoad);
   }
 
-  submitForm (isPageLoad = false) {
+  submitForm (isPageLoad = false, isFromPopState = false) {
     this.destroyView();
-    this.view = new SubmitView(this, isPageLoad);
+    this.view = new SubmitView(this, isPageLoad, isFromPopState);
   }
 
   thread (id, data, isPageLoad = false) {

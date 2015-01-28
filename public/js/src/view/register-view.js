@@ -1,7 +1,7 @@
 let requestHelper = require('../helper/admin-request-helper')();
 
 module.exports = class RegisterView {
-  constructor (parentView, isPageLoad, isFromPopState) {
+  constructor (parentView, isPageLoad = false, isFromPopState = false) {
     this.parentView = parentView;
     this.appEvents = parentView.appEvents;
     this.router = parentView.router;

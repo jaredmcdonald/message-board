@@ -47,13 +47,13 @@ module.exports = class ContentRouter {
     this.callbacks[type] = callback;
   }
 
-  route (isPopState, event = { state : null }) {
+  route (isFromPopState, event = { state : null }) {
     if (this.regexes.submit.test(window.location.hash)) {
-      return this.callbacks.submit(!event.state);
+      return this.callbacks.submit(!event.state, isFromPopState);
     }
 
     if (this.regexes.register.test(window.location.hash)) {
-      return this.callbacks.register(!event.state, isPopState);
+      return this.callbacks.register(!event.state, isFromPopState);
     }
 
     if (this.regexes.admin.test(window.location.hash)) {
