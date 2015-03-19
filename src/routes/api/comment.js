@@ -137,6 +137,7 @@ function arrayToMap (arr) {
 function walkThread (thread, map, userId) {
   if (userId) {
     thread = addUserVoted(userId, false, thread);
+    thread = addEditable(userId, thread);
   }
 
   thread._author = map[thread._author];
@@ -146,6 +147,12 @@ function walkThread (thread, map, userId) {
     thread.children.forEach(child => walkThread(child, map, userId));
   }
 
+  return thread;
+}
+
+// Add `editable` property to each thread item
+function addEditable (userId, thread) {
+  thread.editable = userId === thread._author.toString();
   return thread;
 }
 
