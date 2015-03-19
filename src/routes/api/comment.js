@@ -61,6 +61,26 @@ module.exports = models => {
     });
   });
 
+  // PATCH to edit a specific comment
+  // TODO: cleanup callback mess
+  router.patch('/:id', (req, res) => {
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+    if (!req.body.content && !req.body.title) return utils.badRequest(res);
+
+    models.comment.findById(req.params.id).exec((err, comment) => {
+      if (err) return utils.internalServerError(res);
+      if (comment._author.toString() !== session.getUserId(req)) return utils.notAuthorized(res);
+
+      if (req.body.content) comment.content = req.body.content;
+      if (req.body.title) comment.title = req.body.title;
+
+      comment.save((saveErr, updatedComment) => {
+        if (saveErr) return utils.internalServerError(res);
+        utils.ok(res, updatedComment);
+      });
+    });
+  });
+
   // POST a new comment.
   router.post('/', (req, res) => {
     if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
