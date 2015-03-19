@@ -1,7 +1,5 @@
 <form class="row" data-id="{{replyTo}}">
-  {{^isReply}}
-  <input type="text" class="u-full-width" placeholder="Title">
-  {{/isReply}}
-  <textarea class="u-full-width" placeholder="Lorem ipsum..."></textarea>
+  <input type="text" class="u-full-width{{#isReply}} hide{{/isReply}}" placeholder="Title" value="{{title}}">
+  <textarea class="u-full-width" placeholder="Lorem ipsum...">{{content}}</textarea>
   <input class="button-primary" type="submit" value="Submit">
 </form>

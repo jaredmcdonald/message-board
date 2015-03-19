@@ -91,7 +91,11 @@ module.exports = models => {
     postNewComment(models, comment, (err, newComment) => {
       if (err) return utils.internalServerError(res);
 
-      utils.created(res, newComment, { loggedIn : session.isLoggedIn(req) });
+      let c = newComment.toObject();
+      c.editable = true; // if the user created a comment,
+                         // she should be able to edit it
+
+      utils.created(res, c, { loggedIn : session.isLoggedIn(req) });
     });
 
   });
@@ -170,7 +174,7 @@ function walkThread (thread, map, userId) {
   return thread;
 }
 
-// Add `editable` property to each thread item
+// Add `editable` property to a thread item
 function addEditable (userId, thread) {
   thread.editable = userId === thread._author.toString();
   return thread;

@@ -1,8 +1,9 @@
 module.exports = class SubmitView {
-  constructor (parentView, isPageLoad = false, isFromPopState = false) {
+  constructor (parentView, isPageLoad = false, isFromPopState = false, editId) {
     this.parentView = parentView;
     this.isPageLoad = isPageLoad;
     this.isFromPopState = isFromPopState;
+    this.editId = editId;
     this.el = parentView.el;
     this.templates = parentView.templates;
     this.appEvents = parentView.appEvents;
@@ -28,13 +29,17 @@ module.exports = class SubmitView {
   initialize () {
     this.bindEvents();
 
-    if (this.isPageLoad) {
-      this.router.replaceState(true, this.url);
-    } else if (!this.isFromPopState) {
-      this.router.pushState(true, this.url);
-    } // else: the view is already in history so do nothing
+    if (this.editId) {
+      this.requests.getItem(this.editId, this.render.bind(this));
+    } else {
+      if (this.isPageLoad) {
+        this.router.replaceState(true, this.url);
+      } else if (!this.isFromPopState) {
+        this.router.pushState(true, this.url);
+      } // else: the view is already in history so do nothing
 
-    this.render();
+      this.render();
+    }
   }
 
   logoutHandler (data) {
@@ -55,9 +60,26 @@ module.exports = class SubmitView {
     let title = event.target[0].value.trim()
     ,   content = event.target[1].value.trim();
 
-    if (!title || !content) return false; // todo: error messaging
+    if (!this.editId && (!title || !content)) return false; // todo: error messaging
+    if (this.editId && !content) return false;
 
-    this.requests.create({ title, content }, this.handleResponse.bind(this));
+    let data = { title, content };
+
+    if (this.editId) {
+      // this is an edit to an existing item
+      this.requests.edit(this.editId, data, this.handleEditResponse.bind(this));
+    } else {
+      this.requests.create(data, this.handleResponse.bind(this));
+    }
+
+  }
+
+  handleEditResponse (response) {
+    if (response.data.path === '') {
+      this.parentView.thread(response.data._id);
+    } else {
+      this.parentView.thread(response.data.path.split(',')[1]);
+    }
   }
 
   handleResponse (data) {
@@ -76,7 +98,11 @@ module.exports = class SubmitView {
     this.appEvents.remove(this.events.login, this.namespace);
   }
 
-  render () {
-    this.el.innerHTML = this.templates.back.render() + this.templates.submit.render();
+  render (response = { data : {} }) {
+    this.el.innerHTML = this.templates.back.render() + this.templates.submit.render({
+      content : response.data.content,
+      title : response.data.title,
+      isReply : !!response.data.path
+    });
   }
 }

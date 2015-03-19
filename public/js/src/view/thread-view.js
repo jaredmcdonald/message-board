@@ -89,12 +89,15 @@ module.exports = class ThreadView {
     } else if (/vote-link/.test(event.target.className)) {
       event.preventDefault();
       this.vote(event.target.dataset);
+    } else if (/edit-link/.test(event.target.className)) {
+      event.preventDefault();
+      this.edit(event.target.dataset);
     }
   }
 
   submitListener (event) {
     event.preventDefault();
-    let content = event.target[0].value.trim();
+    let content = event.target[1].value.trim();
 
     if (!content) return false; // todo: error messaging
 
@@ -106,6 +109,10 @@ module.exports = class ThreadView {
 
   vote (data) {
     this.requests.vote(data.id, data.vote, this.handleVoteResponse.bind(this));
+  }
+
+  edit (data) {
+    this.parentView.submitForm(false, false, data.id);
   }
 
   handleVoteResponse (response) {
@@ -128,16 +135,16 @@ module.exports = class ThreadView {
   generateThreadHTML (data, isLoggedIn) {
     // we don't want to mutate the model, so create a local copy
     // which we can mutate (namely, converting `content` from markdown)
-    let item = Object.create(data);
-    item.content = marked(item.content);
-    if (!item.children) {
-      return this.templates.thread.render({ item, isLoggedIn }, { votePartial : this.templates.votePartial });
+    let content = marked(data.content);
+    if (!data.children) {
+      return this.templates.thread.render({ item : data, content, isLoggedIn }, { votePartial : this.templates.votePartial });
     }
 
     return this.templates.thread.render({
-      item,
+      item : data,
+      content,
       isLoggedIn,
-      nested : item.children.reduce((str, current) => str + this.generateThreadHTML(current, isLoggedIn), '')
+      nested : data.children.reduce((str, current) => str + this.generateThreadHTML(current, isLoggedIn), '')
     }, { votePartial : this.templates.votePartial });
   }
 

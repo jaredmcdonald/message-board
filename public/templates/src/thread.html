@@ -2,13 +2,16 @@
   {{#item.title}}
   <h4>{{item.title}}</h4>
   {{/item.title}}
-  <section class="content">{{{item.content}}}</section>
+  <section class="content">{{{content}}}</section>
   <section class="info">
     <span class="points">{{item.points}} points by {{item._author.username}}</span>
     {{#isLoggedIn}}
       | <a class="reply-link" href="#" data-id="{{item._id}}">reply</a>
       {{#item}}{{> votePartial}}{{/item}}
     {{/isLoggedIn}}
+    {{#item.editable}}
+      | <a class="edit-link" href="#" data-id="{{item._id}}">edit</a>
+    {{/item.editable}}
   </section>
   <hr />
   {{#nested}}
