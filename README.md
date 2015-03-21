@@ -5,8 +5,14 @@ Hacker News-inspired message board, written in express.
 ## Prerequisites
 
 - `mongodb` (`brew install mongodb`)
-- `gulp` (`npm install -g gulp`)
-- `supervisor` (`npm install -g supervisor`)
+- development: `supervisor` (`npm install -g supervisor`)
+
+## Environment variables
+
+- `SECRET`: express session secret
+- `PORT`: for HTTP
+- `MONGODB_URI` or `MONGOLAB_URI`: URI of mongodb instance, passed to `mongoose.connect`
+- `APPLICATION_NAME`: name of app, used in main `<h1>` and page title
 
 ## Development
 
@@ -23,18 +29,12 @@ npm run-script start-dev  # watch server and client code
 
 Super beta.
 
-### Environment variables
-
-- `SECRET`: express session secret
-- `PORT`: for HTTP
-- `MONGODB_URI` or `MONGOLAB_URI`: URI passed to `mongoose.connect`
-
-Then:
-
 ```bash
-
 npm start  # (should probably run with `forever`)
+
 ```
+
+Fully Heroku/[Foreman](http://ddollar.github.io/foreman/) compatible.
 
 ## Scripts
 
