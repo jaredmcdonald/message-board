@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "gulp && node ./bin/www",
-    "start-dev": "bash ./start-dev.bash"
+    "start-dev": "bash ./start-dev.bash",
+    "create-admin": "gulp && node ./bin/create-admin"
   },
   "dependencies": {
     "body-parser": "~1.8.1",

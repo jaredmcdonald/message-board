@@ -1,4 +1,4 @@
-let crypto = require('crypto')
+let hashPassword = require('../modules/password').hashPassword
 ,   utils = require('../modules/http-utils')
 ,   session = require('../modules/session');
 
@@ -154,11 +154,4 @@ function hashUserPassword (user) {
     delete user.password
   }
   return user;
-}
-
-// store passwords as md5 checksums
-function hashPassword (pw) {
-  let hash = crypto.createHash('md5');
-  hash.write(pw);
-  return hash.digest('hex');
 }
