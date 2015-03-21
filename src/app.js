@@ -8,7 +8,8 @@ let express = require('express')
 ,   mongoose = require('mongoose')
 ,   materializedPlugin = require('mongoose-materialized')
 ,   models = require('./models')(mongoose, materializedPlugin)
-,   apiRoutes = require('./routes/api')(models)
+,   controllers = require('./controllers')(models)
+,   apiRoutes = require('./routes/api')(controllers)
 ,   htmlRoutes = require('./routes/html')
 
 ,   app = express();
