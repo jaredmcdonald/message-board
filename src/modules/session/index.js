@@ -5,7 +5,7 @@
 
 exports.isLoggedIn = req => !!req.session && !!req.session.username && !!req.session.userId;
 
-exports.getUsername = req => req.session.username || '';
+exports.getUsername = req => req.session.username || null;
 
 exports.getUserId = req => req.session.userId || '';
 
