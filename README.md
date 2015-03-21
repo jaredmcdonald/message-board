@@ -32,10 +32,8 @@ Super beta.
 Then:
 
 ```bash
-node node_modules/gulp/bin/gulp.js  # compilation step (if you have
-                                    # gulp globally, just `gulp`)
-npm start                           # start server (should probably run
-                                    # with `forever`)
+
+npm start  # (should probably run with `forever`)
 ```
 
 ## TODO
