@@ -40,7 +40,7 @@ app.use(`${baseApiPath}/comment`, apiRoutes.comment);
 app.use(`${baseApiPath}/user`   , apiRoutes.user);
 
 // DB
-mongoose.connect(process.env.MONGODB_HOST || 'localhost/messageboard');
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI || 'localhost/messageboard');
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

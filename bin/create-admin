@@ -26,4 +26,4 @@ function createInitialUser () {
   });
 }
 
-mongoose.connect(process.env.MONGODB_HOST || 'localhost/messageboard', createInitialUser);
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI || 'localhost/messageboard', createInitialUser);

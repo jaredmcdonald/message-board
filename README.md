@@ -27,7 +27,7 @@ Super beta.
 
 - `SECRET`: express session secret
 - `PORT`: for HTTP
-- `MONGODB_HOST`: hostname for mongodb
+- `MONGODB_URI` or `MONGOLAB_URI`: URI passed to `mongoose.connect`
 
 Then:
 
@@ -35,6 +35,10 @@ Then:
 
 npm start  # (should probably run with `forever`)
 ```
+
+## Scripts
+
+- `npm run-script create-admin`: creates an admin user (ideal for first-time setup; exposed in `Procfile` as `setup` task). set the initial username and pw with environment variables `ADMIN_USERNAME` and `ADMIN_PASSWORD` (default `administrator` / `12345`). can always change these later through the web frontend or API. before running, make sure the database is on and configured
 
 ## TODO
 
