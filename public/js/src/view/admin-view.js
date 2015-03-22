@@ -101,6 +101,7 @@ module.exports = class AdminView {
   }
 
   newUser (data) {
+    if (!data.username || !data.password) return false;
     this.requests.newUser(data, this.handleNewUserResponse.bind(this));
   }
 
