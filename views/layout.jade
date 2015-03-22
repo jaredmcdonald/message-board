@@ -2,7 +2,7 @@ doctype html
 html
   head
     title= title
-    link(rel='stylesheet', href='/css/main.css')
+    !{cachify_css('/css/main.css')}
   body
     section(class='container')
       block header

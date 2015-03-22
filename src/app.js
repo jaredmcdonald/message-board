@@ -4,6 +4,7 @@ let express = require('express')
 ,   logger = require('morgan')
 ,   cookieParser = require('cookie-parser')
 ,   compression = require('compression')
+,   cachify = require('connect-cachify')
 ,   session = require('express-session')
 ,   bodyParser = require('body-parser')
 ,   mongoose = require('mongoose')
@@ -22,6 +23,10 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(compression());
+app.use(cachify.setup(require('../config/cachify-config.json'), {
+    production : app.get('env') !== 'development',
+    root: path.join(__dirname, '../public')
+}));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
