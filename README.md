@@ -13,6 +13,7 @@ Hacker News-inspired message board, written in express.
 - `PORT`: for HTTP
 - `MONGODB_URI` or `MONGOLAB_URI`: URI of mongodb instance, passed to `mongoose.connect`
 - `APPLICATION_NAME`: name of app, used in main `<h1>` and page title
+- `NODE_ENV`: `development` or `production`
 
 ## Development
 
