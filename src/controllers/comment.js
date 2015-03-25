@@ -1,6 +1,10 @@
 let utils = require('../modules/http-utils')
 ,   session = require('../modules/session');
 
+const loginRequiredMsg = 'login required'
+,     noVoteToRemoveMsg = 'no vote to remove'
+,     onlyOneVoteMsg = 'can only vote once per comment';
+
 module.exports = models => ({
   // GET all comments.
   getAllComments : (req, res) => {
@@ -42,7 +46,7 @@ module.exports = models => ({
   // PATCH to edit a specific comment.
   // TODO: cleanup callback mess
   editComment : (req, res) => {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, loginRequiredMsg);
     if (!req.body.content && !req.body.title) return utils.badRequest(res);
 
     models.comment.findById(req.params.id).exec((err, comment) => {
@@ -61,7 +65,7 @@ module.exports = models => ({
 
   // POST a new comment.
   newComment : (req, res) => {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, loginRequiredMsg);
 
     let comment = req.body;
     comment._author = session.getUserId(req);
@@ -79,7 +83,7 @@ module.exports = models => ({
 
   // POST to upvote or downvote a comment.
   addVote : (req, res) => {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, loginRequiredMsg);
 
     newVote(session.getUserId(req), req.params.id, req.params.upOrDown === 'up', models.comment,
       voteResponseHandler.bind(null, session.getUserId(req), res, false));
@@ -87,7 +91,7 @@ module.exports = models => ({
 
   // POST to remove a previous vote.
   removeVote : (req, res) => {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, 'login required');
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, loginRequiredMsg);
 
     removeVote(session.getUserId(req), req.params.id, req.params.upOrDown === 'up', models.comment,
       voteResponseHandler.bind(null, session.getUserId(req), res, true));
@@ -208,7 +212,7 @@ function getAuthors (item, arr = []) {
 function voteResponseHandler (userId, res, isRemoval, err, updatedComment) {
   if (err) return utils.internalServerError(res);
   if (!updatedComment) return utils.notAuthorized(res, isRemoval ?
-    'no vote to remove' : 'can only vote once per comment');
+    noVoteToRemoveMsg : onlyOneVoteMsg);
 
   utils.ok(res, addUserVoted(userId, true, updatedComment));
 }

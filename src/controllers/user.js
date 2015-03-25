@@ -2,7 +2,9 @@ let hashPassword = require('../modules/password').hashPassword
 ,   utils = require('../modules/http-utils')
 ,   session = require('../modules/session');
 
-let adminError = 'admin priveleges required';
+const adminErrorMsg = 'admin priveleges required'
+,     authFailedMsg = 'auth failed'
+,     missingFieldsMsg = 'missing or mistyped fields';
 
 module.exports = models => ({
 
@@ -21,7 +23,7 @@ module.exports = models => ({
       pwHash: hashPassword(req.body.password)
     }).exec((err, user) => {
       if (err) return utils.internalServerError(res);
-      if (!user) return utils.notAuthorized(res, 'auth failed');
+      if (!user) return utils.notAuthorized(res, authFailedMsg);
 
       session.login(req, user.username, user._id);
       utils.ok(res, {
@@ -52,10 +54,10 @@ module.exports = models => ({
 
   // GET all users.
   getAllUsers : (req, res) => {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, adminError);
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, adminErrorMsg);
     isAdmin(models.user, session.getUserId(req), (err, admin) => {
       if (err) return utils.internalServerError(err);
-      if (!admin) return utils.notAuthorized(res, adminError);
+      if (!admin) return utils.notAuthorized(res, adminErrorMsg);
 
       models.user.find({}, '-__v').exec((err, users) => {
         if (err) return utils.internalServerError(res);
@@ -66,10 +68,10 @@ module.exports = models => ({
 
   // GET an individual user.
   getUser : (req, res) => {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, adminError);
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, adminErrorMsg);
     isAdmin(models.user, session.getUserId(req), (err, admin) => {
       if (err) return utils.internalServerError(res);
-      if (!admin) return utils.notAuthorized(res, adminError);
+      if (!admin) return utils.notAuthorized(res, adminErrorMsg);
 
       models.user.findById(req.params.id, '-__v').exec((err, user) => {
         if (err) return utils.internalServerError(res);
@@ -81,11 +83,11 @@ module.exports = models => ({
 
   // DELETE user.
   deleteUser : (req, res) => {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, adminError);
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, adminErrorMsg);
 
     isAdmin(models.user, session.getUserId(req), (err, admin) => {
       if (err) return utils.internalServerError(res);
-      if (!admin) return utils.notAuthorized(res, adminError);
+      if (!admin) return utils.notAuthorized(res, adminErrorMsg);
 
       models.user.findByIdAndRemove(req.params.id).exec((err, user) => {
         if (err) return utils.internalServerError(res);
@@ -97,11 +99,11 @@ module.exports = models => ({
 
   // PATCH to edit user.
   editUser : (req, res) => {
-    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, adminError);
+    if (!session.isLoggedIn(req)) return utils.notAuthorized(res, adminErrorMsg);
 
     isAdmin(models.user, session.getUserId(req), (err, admin) => {
       if (err) return utils.internalServerError(res);
-      if (!admin) return utils.notAuthorized(res, adminError);
+      if (!admin) return utils.notAuthorized(res, adminErrorMsg);
 
       updateUser(models.user, req.params.id, req.body, (err, updated) => {
         if (err) return utils.internalServerError(res);
@@ -117,7 +119,7 @@ module.exports = models => ({
 
 function saveUser (UserModel, user, res) {
   if (typeof user.username !== 'string' || typeof user.password !== 'string') {
-    return utils.badRequest(res, 'missing or mistyped fields');
+    return utils.badRequest(res, missingFieldsMsg);
   }
 
   new UserModel(hashUserPassword(user)).save((err, newUser) => {
