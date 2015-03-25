@@ -7,12 +7,12 @@ NEWLINE=""
 ARROW="===>"
 
 # commands to be echoed and executed
-GULP_COMMAND="nohup gulp watch"
-SERVER_COMMAND="nohup supervisor -w dist bin/www"
+GULP_COMMAND="nohup gulp watch > $GULP_LOG &"
+SERVER_COMMAND="nohup supervisor -w dist bin/www > $SERVER_LOG &"
 TAIL_COMMAND="tail -f $SERVER_LOG $GULP_LOG"
 
 # ensure logs exist
-mkdir -p "$LOG_DIR"
+mkdir -p $LOG_DIR
 touch $SERVER_LOG $GULP_LOG
 
 # ensure `supervisor` is installed
@@ -33,17 +33,17 @@ fi
 
 echo $NEWLINE
 echo "Watching source files for changes and sending output to $GULP_LOG..."
-echo "$ARROW $GULP_COMMAND > $GULP_LOG &"
-$GULP_COMMAND > $GULP_LOG &
+echo $ARROW $GULP_COMMAND
+eval $GULP_COMMAND
 
 echo $NEWLINE
 echo "Starting server with supervisor and sending output to $SERVER_LOG..."
-echo "$ARROW $SERVER_COMMAND > $SERVER_LOG &"
-$SERVER_COMMAND > $SERVER_LOG &
+echo $ARROW $SERVER_COMMAND
+eval $SERVER_COMMAND
 
 echo $NEWLINE
 echo "Tailing $SERVER_LOG and $GULP_LOG..."
-echo "$ARROW $TAIL_COMMAND"
+echo $ARROW $TAIL_COMMAND
 echo "(exit: ^C)"
 echo $NEWLINE
-$TAIL_COMMAND
+eval $TAIL_COMMAND
