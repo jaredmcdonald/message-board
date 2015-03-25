@@ -23,7 +23,7 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(compression());
-app.use(cachify.setup(require('../config/cachify-config.json'), {
+app.use(cachify.setup({}, {
     production : app.get('env') !== 'development',
     root: path.join(__dirname, '../public')
 }));
