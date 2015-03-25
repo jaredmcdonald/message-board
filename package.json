@@ -1,6 +1,7 @@
 {
   "name": "message-board",
   "version": "0.0.0",
+  "repository": "https://github.com/jaredmcdonald/message-board",
   "private": true,
   "scripts": {
     "start": "gulp && node ./bin/www",
